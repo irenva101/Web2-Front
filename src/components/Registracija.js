@@ -1,39 +1,48 @@
-import React, { useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ImageUploader from "../services/ArtikalService";
 
 const Registracija = () => {
-
   const navigate = useNavigate();
   const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState("");
   const [notificationVisible, setNotificationVisible] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
+
+  //slika
+  const [UploadedImage, setUploadedImage] = useState(null);
+  const [slikaKorisnika,setSlikaKorisnika]=useState("");
+  const handleImageUpload = (imageData) => {
+    setUploadedImage(imageData);
+    setSlikaKorisnika(imageData);
+  };
 
   const [formData, setFormData] = useState({
-    "KorisnickoIme": "",
-    "Email": "",
-    "Lozinka": "",
-    "Ime": "",
-    "Prezime": "",
-    "DatumRodjenja": "2000-01-01",
-    "Adresa": "",
-    "TipKorisnika": 0,
-    "SlikaKorisnika": "",
-    "Verifikovan": false,
-    "Postarina": 0
+    KorisnickoIme: "",
+    Email: "",
+    Lozinka: "",
+    Ime: "",
+    Prezime: "",
+    DatumRodjenja: "2000-01-01",
+    Adresa: "",
+    TipKorisnika: 0,
+    SlikaKorisnika: "",
+    Verifikovan: false,
+    Postarina: 0,
   });
-
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'email') {
+    if (name === "email") {
       setEmail(value); // Ažuriramo email stanje
     }
 
-    const newValue=name==='datumRodjenja' ? new Date(value):value;
-    const newTipKorisnika = name === 'tipKorisnika' && value === 'Prodavac' ? 1 : formData.tipKorisnika;
+    const newValue = name === "datumRodjenja" ? new Date(value) : value;
+    const newTipKorisnika =
+      name === "tipKorisnika" && value === "Prodavac"
+        ? 1
+        : formData.tipKorisnika;
 
     setFormData({
       ...formData,
@@ -41,7 +50,6 @@ const Registracija = () => {
       tipKorisnika: newTipKorisnika,
     });
   };
-    
 
   const handleImageChange = (e) => {
     setFormData({
@@ -53,68 +61,69 @@ const Registracija = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const emailData={
+    const emailData = {
       Receiver: email,
       Subject: "Registracija(WEB2)",
-      Body: "Postovani, uskoro cete primiti jos jedan mejl da Vas obavestimo o verifikaciji vaseg naloga."
+      Body: "Postovani, uskoro cete primiti jos jedan mejl da Vas obavestimo o verifikaciji vaseg naloga.",
     };
 
     // Ovde možete implementirati logiku za slanje podataka na server ili ih spremanje u lokalno skladište.
-    fetch('https://localhost:44388/Korisnik', {
-        method: 'POST',
-        body: JSON.stringify(formData),
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        mode: 'cors',
+    fetch("https://localhost:44388/Korisnik", {
+      method: "POST",
+      body: JSON.stringify({
+        ...formData,
+        slikaKorisnika: slikaKorisnika,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
     })
-    .then((Response)=> Response.json())
-    .then((data)=>{
+      .then((Response) => Response.json())
+      .then((data) => {
         //obrada odgovora servera
 
         console.log(formData.tipKorisnika);
-        if(formData.tipKorisnika===1){
-          setNotificationMessage('Registracija je uspešno zabeležena. Sačekajte da se obradi. O uspesnoj registraciji bicete obavesteni putem e-mail adrese...');
+        if (formData.tipKorisnika === 1) {
+          setNotificationMessage(
+            "Registracija je uspešno zabeležena. Sačekajte da se obradi. O uspesnoj registraciji bicete obavesteni putem e-mail adrese..."
+          );
           setShowNotification(true);
-          
+
           console.log(emailData);
           //slanje mejla
-          fetch('https://localhost:44388/Email/emailService', {
-            method: 'POST',
+          fetch("https://localhost:44388/Email/emailService", {
+            method: "POST",
             body: JSON.stringify(emailData),
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-            mode: 'cors',
+            mode: "cors",
           })
-          .then((Response)=> Response.json())
-          .then((data)=>{
-            console.log("POGODILI BEK.")
-          })
-          .catch((error)=> {
-            //obrada greske
-            console.log("PUKLI");
-            console.log(error);
-          })
-
-
-
+            .then((Response) => Response.json())
+            .then((data) => {
+              console.log("POGODILI BEK.");
+            })
+            .catch((error) => {
+              //obrada greske
+              console.log("PUKLI");
+              console.log(error);
+            });
 
           // Postavljanje tajmera za skrivanje notifikacije i navigaciju nakon 5 sekundi
           setNotificationVisible(true);
           setTimeout(() => {
             setNotificationVisible(false);
-            navigate('/logovanje');
-        }, 5000); // 5000 milisekundi = 5 sekundi
-        }else{
-          
-          navigate('/logovanje');
+            navigate("/logovanje");
+          }, 5000); // 5000 milisekundi = 5 sekundi
+        } else {
+          navigate("/logovanje");
         }
-    })
-    .catch((error) => {
+      })
+      .catch((error) => {
         //obrada greske
         console.log(error);
-    })
+      });
   };
 
   return (
@@ -129,7 +138,8 @@ const Registracija = () => {
           value={formData.korisnickoIme}
           onChange={handleChange}
           required
-        /><br/>
+        />
+        <br />
 
         <label htmlFor="email">E-mail adresa:</label>
         <input
@@ -139,7 +149,8 @@ const Registracija = () => {
           value={formData.email}
           onChange={handleChange}
           required
-        /><br/>
+        />
+        <br />
 
         <label htmlFor="lozinka">Lozinka:</label>
         <input
@@ -149,7 +160,8 @@ const Registracija = () => {
           value={formData.lozinka}
           onChange={handleChange}
           required
-        /><br/>
+        />
+        <br />
 
         <label htmlFor="ime">Ime:</label>
         <input
@@ -159,7 +171,8 @@ const Registracija = () => {
           value={formData.ime}
           onChange={handleChange}
           required
-        /><br/>
+        />
+        <br />
 
         <label htmlFor="prezime">Prezime:</label>
         <input
@@ -169,17 +182,23 @@ const Registracija = () => {
           value={formData.prezime}
           onChange={handleChange}
           required
-        /><br/>
+        />
+        <br />
 
         <label htmlFor="datumRodjenja">Datum rođenja:</label>
         <input
           type="date"
           id="datumRodjenja"
           name="datumRodjenja"
-          value={formData.datumRodjenja ? formData.datumRodjenja.toISOString().split('T')[0] : ''}
+          value={
+            formData.datumRodjenja
+              ? formData.datumRodjenja.toISOString().split("T")[0]
+              : ""
+          }
           onChange={handleChange}
           required
-        /><br/>
+        />
+        <br />
 
         <label htmlFor="adresa">Adresa:</label>
         <input
@@ -189,23 +208,24 @@ const Registracija = () => {
           value={formData.adresa}
           onChange={handleChange}
           required
-        /><br/>
+        />
+        <br />
 
         <label htmlFor="tipKorisnika">Tip korisnika:</label>
         <select
-            id="tipKorisnika"
-            name="tipKorisnika"
-            value={formData.tipKorisnika}
-            onChange={handleChange}
-            required
+          id="tipKorisnika"
+          name="tipKorisnika"
+          value={formData.tipKorisnika}
+          onChange={handleChange}
+          required
         >
-            <option value="Kupac">Kupac</option>
-            <option value="Prodavac">Prodavac</option>
+          <option value="Kupac">Kupac</option>
+          <option value="Prodavac">Prodavac</option>
         </select>
-        <br/>
+        <br />
 
-        {formData.tipKorisnika === 'Prodavac' && (
-            <div>
+        {formData.tipKorisnika === "Prodavac" && (
+          <div>
             <label htmlFor="postarina">Postarina:</label>
             <input
               type="number"
@@ -215,26 +235,19 @@ const Registracija = () => {
               onChange={handleChange}
               required
             />
-            <br/>
+            <br />
           </div>
         )}
 
         <label htmlFor="slika">Slika profila:</label>
-        <input
-          type="file"
-          id="slika"
-          name="slika"
-          onChange={handleImageChange}
-          required
-        /><br/>
+        <ImageUploader onImageUpload={handleImageUpload} />
+        <br />
 
         <button type="submit">Registruj se</button>
       </form>
 
       {showNotification && (
-            <div className="notification">
-                {notificationMessage}
-            </div>
+        <div className="notification">{notificationMessage}</div>
       )}
     </div>
   );
