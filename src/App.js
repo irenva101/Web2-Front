@@ -11,6 +11,7 @@ import DodavanjeArtikla from './components/DodavanjeArtikla';
 import StarePorudzbine from './components/StarePorudzbine';
 import NovePorudzbine from './components/NovePorudzbine';
 import Verifikacija from './components/Verifikacija';
+import PrikazVerifikacija from './components/PrikazVerifikacija';
 
 
 const App=()=>{
@@ -30,6 +31,7 @@ const App=()=>{
           <Route path='/ulogovan-korisnik/moje-porudzbine' element={<StarePorudzbine/>}/>
           <Route path='/ulogovan-korisnik/nove-porudzbine' element={<NovePorudzbine/>}/>
           <Route path='/ulogovan-korisnik/verifikacija' element={<Verifikacija/>}/>
+          <Route path='/ulogovan-korisnik/prikaz-verifikacija' element={<PrikazVerifikacija/>}/>
           
           
           {/* <PrivateRoute path="/svi-proizvodi" component={SviProizvodi}/> */}

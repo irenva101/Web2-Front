@@ -1,15 +1,19 @@
 import React,{useState, useEffect} from "react";
+import PrikazVerifikacija from "./PrikazVerifikacija";
 
 const Verifikacija=()=>{
 
     const [prodavac, setProdavce] =useState([]);
     const [loading, setLoading]=useState(true);
+    const [email, setEmail] = useState('');
 
     const formatDate = (dateString) => {
         console.log(dateString);
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
         return new Date(dateString).toLocaleDateString('en-US', options).replace(/\//g, '-');
     }
+
+    
 
     useEffect(()=>{
         fetch("https://localhost:44388/Korisnik/neverProdavce", {
@@ -32,9 +36,18 @@ const Verifikacija=()=>{
 
     },[]);
 
-    const handleVerifikacija = (index) => {
+    const handleVerifikacija = (index, email) => {
         // Implementirajte logiku za verifikaciju
         console.log(`Verifikacija prodavca sa indeksom ${index}`);
+        console.log(email);
+        setEmail(email);
+
+        const emailData={
+            Receiver: email,
+            Subject: "Registracija(WEB2)",
+            Body: "Postovani, vasa registracija je odobrena."
+          };
+
         fetch(`https://localhost:44388/Korisnik/verProdavca?idKorisnika=${index}`, {
                 method: "POST",
                 body: JSON.stringify(index),
@@ -45,7 +58,28 @@ const Verifikacija=()=>{
             })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
+                console.log(email+"aaaaaaaaaaaaaaaaaaaaaaaaaaaloo");
+                console.log(data + "irenaa");
+                //ovde odradi fetch za post za slanje mejla
+                fetch('https://localhost:44388/Email/emailService', {
+                    body: JSON.stringify(emailData),
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    mode: 'cors',
+                })
+                .then((Response)=> Response.json())
+                .then((data)=>{
+                    console.log("Poslali mejl da smo validirali nalog.")
+                })
+                .catch((error)=> {
+                    //obrada greske
+                    console.log("PUKLI");
+                    console.log(error);
+                }) 
+
+
             })
             .catch((error) => {
                 console.log(error);
@@ -54,9 +88,18 @@ const Verifikacija=()=>{
     }
         
     
-        const handleOdbijVerifikaciju = (index) => {
+        const handleOdbijVerifikaciju = (index, email) => {
             // Implementirajte logiku za odbijanje verifikacije
             console.log(`Odbijanje verifikacije prodavca sa indeksom ${index}`);
+
+            setEmail(email);
+            const emailData={
+                Receiver: email,
+                Subject: "Registracija(WEB2)",
+                Body: "Postovani, vasa registracija je odbijena."
+            };
+            
+
             fetch(`https://localhost:44388/Korisnik/neverProdavca?idKorisnika=${index}`, {
                 method: "POST",
                 body: JSON.stringify(index),
@@ -68,6 +111,25 @@ const Verifikacija=()=>{
             .then((response) => response.json())
             .then((data) => {
                 console.log(data);
+                console.log(emailData);
+                //fetch za odbijanje verifikacije
+                fetch('https://localhost:44388/Email/emailService', {
+                    body: JSON.stringify(emailData),
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    mode: 'cors',
+                })
+                .then((Response)=> Response.json())
+                .then((data)=>{
+                    console.log("Poslali mejl da odbijemo validaciju.")
+                })
+                .catch((error)=> {
+                    //obrada greske
+                    console.log("PUKLI");
+                    console.log(error);
+                }) 
             })
             .catch((error) => {
                 console.log(error);
@@ -111,10 +173,10 @@ const Verifikacija=()=>{
                         <td>{prodavac.adresa}</td>
                         <td>{prodavac.postarina}</td>
                         <td>
-                            <button onClick={() => handleVerifikacija(prodavac.id)}>Verifikuj</button>
+                            <button onClick={() => handleVerifikacija(prodavac.id, prodavac.email)}>Verifikuj</button>
                         </td>
                         <td>
-                            <button onClick={() => handleOdbijVerifikaciju(prodavac.id)}>Odbij verifikaciju</button>
+                            <button onClick={() => handleOdbijVerifikaciju(prodavac.id, prodavac.email)}>Odbij verifikaciju</button>
                         </td>
                     </tr>
                 ))}
@@ -123,6 +185,10 @@ const Verifikacija=()=>{
 
             </table>
             )}
+            <div>
+                <br/>
+                <PrikazVerifikacija/>
+            </div>
         </div>
     );
 };
