@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import ImageUploader from "../services/KorisnikService";
 
 const Profil = () => {
   const [formData, setFormData] = useState({
@@ -23,6 +24,12 @@ const Profil = () => {
   const postarinaRef = useRef(0);
 
   const formRef = useRef(null);
+
+  //rad sa slikom
+  const [UploadedImage, setUploadedImage] = useState(null);
+  const handleImageUpload = (imageData) => {
+    setUploadedImage(imageData);
+  };
 
   useEffect(() => {
     fetch("https://localhost:44388/Korisnik?idKorisnika=4", {
@@ -59,10 +66,10 @@ const Profil = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
   };
 
   const handleSubmit = (e) => {
@@ -71,9 +78,6 @@ const Profil = () => {
     //formatiranje datuma za slanje nazad serveru
     const zaKonvertovanje = formData.datumRodjenja; //"28-7-2023"
     const formattedDateString = zaKonvertovanje + "T23:00:00.000Z";
-    //console.log(formData);
-    console.log(zaKonvertovanje + "irenaaaaaaaaaaaaaaaaaaaaaaa22222222");
-    console.log(formattedDateString + "ZA BAZU");
 
     const formDataToSend = {
       korisnickoIme: formRef.current.korisnickoIme.value,
@@ -84,7 +88,7 @@ const Profil = () => {
       datumRodjenja: formattedDateString,
       adresa: formRef.current.adresa.value,
       tipKorisnika: tipRef.current.value,
-      slikaKorisnika: formRef.current.slikaKorisnika.value,
+      slikaKorisnika: UploadedImage,
       postarina: postarinaRef.current,
     };
 
@@ -183,12 +187,7 @@ const Profil = () => {
           </label>
           <label>
             Slika:
-            <input
-              type="text"
-              name="slikaKorisnika"
-              value={formData.slikaKorisnika}
-              onChange={handleChange}
-            />
+            <ImageUploader onImageUpload={handleImageUpload} />
             <p></p>
           </label>
           {formData.tipKorisnika === "Prodavac" && (
@@ -210,6 +209,28 @@ const Profil = () => {
       ) : (
         <p>Ucitavanje podataka...</p>
       )}
+
+      <div className="user-details">
+        <h3>Detalji korisnika</h3>
+        {korisnikPodaci && (
+          <div>
+            <p>Korisnicko ime: {korisnikPodaci.korisnickoIme}</p>
+            <p>Email: {korisnikPodaci.email}</p>
+            <p>Ime: {korisnikPodaci.ime}</p>
+            <p>Prezime: {korisnikPodaci.prezime}</p>
+            <p>Datum rodjenja: {korisnikPodaci.datumRodjenja}</p>
+            <p>Adresa: {korisnikPodaci.adresa}</p>
+            <p>
+              Slika:
+              <img
+                src={korisnikPodaci.slikaKorisnika}
+                alt="Uploaded"
+                style={{ maxWidth: "100px" }}
+              />
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
