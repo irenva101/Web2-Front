@@ -25,6 +25,10 @@ const Profil = () => {
 
   const formRef = useRef(null);
 
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
+
   //rad sa slikom
   const [UploadedImage, setUploadedImage] = useState(null);
   const handleImageUpload = (imageData) => {
@@ -66,16 +70,38 @@ const Profil = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+
+    if (name === "lozinka") {
+      // Ako se menja polje za šifru, ažuriraj i polje za potvrdu šifre
+      setPasswordConfirmation("");
+    }
+  };
+
+  const handlePasswordConfirmationChange = (e) => {
+    const confirmedPassword = e.target.value;
+    setPasswordConfirmation(e.target.value);
+
+    // Proveri da li unete šifre i potvrda šifre odgovaraju
+    if (formData.lozinka === confirmedPassword) {
+      setPasswordsMatch(true);
+    } else {
+      setPasswordsMatch(false);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Fetch zahtev za slanje izmenjenih podataka na server
     //formatiranje datuma za slanje nazad serveru
+    if (formData.lozinka !== passwordConfirmation) {
+      console.log("Šifre se ne podudaraju.");
+      return;
+    }
+
     const zaKonvertovanje = formData.datumRodjenja; //"28-7-2023"
     const formattedDateString = zaKonvertovanje + "T23:00:00.000Z";
 
@@ -103,10 +129,12 @@ const Profil = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Podaci su uspešno poslati na server:", data);
+        setIsSuccess(true);
       })
       .catch((error) => {
         // Obrada greške
         console.error("Greška prilikom slanja podataka na server:", error);
+        setIsSuccess(false);
       });
   };
 
@@ -143,6 +171,19 @@ const Profil = () => {
               value={formData.lozinka}
               onChange={handleChange}
             />
+            <p></p>
+          </label>
+          <label>
+            Potvrda lozinke:
+            <input
+              type="password"
+              name="potvrdaLozinke"
+              value={passwordConfirmation}
+              onChange={handlePasswordConfirmationChange}
+            />
+            {passwordsMatch ? null : (
+              <p style={{ color: "red" }}>Šifre se ne podudaraju.</p>
+            )}
             <p></p>
           </label>
           <label>
@@ -205,7 +246,9 @@ const Profil = () => {
             </div>
           )}
           <button type="submit">Sacuvaj izmene</button>
+          {isSuccess && <p style={{ color: "green" }}>Podaci su uspešno ažurirani!</p>}
         </form>
+        
       ) : (
         <p>Ucitavanje podataka...</p>
       )}
