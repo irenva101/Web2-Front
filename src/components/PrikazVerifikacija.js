@@ -3,7 +3,6 @@ import React,{useEffect, useState} from "react";;
 const PrikazVerifikacija=()=>{
 
     const formatDate = (dateString) => {
-        console.log(dateString);
         const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
         return new Date(dateString).toLocaleDateString('en-US', options).replace(/\//g, '-');
     }
@@ -23,10 +22,12 @@ const PrikazVerifikacija=()=>{
     const [prodavac, setProdavce] =useState([]);
     
     useEffect(()=>{
+        var token = localStorage.getItem("token");
         fetch("https://localhost:44388/Korisnik/allKorisnike", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
             }, 
             mode: 'cors',
         })

@@ -37,8 +37,9 @@ const Logovanje =()=>{
         .then((data)=>{
             console.log(data);
             console.log('Response from server:', data);
+            var jwtToken=data['token'];
+            localStorage.setItem("token", jwtToken);
             navigate('/ulogovan-korisnik');
-            localStorage.setItem("token",data); //pravljenje nove varijable u localStorage-u koja ce da cuva token i zvace se 'token'
         })
         .catch((error)=> {
               console.error("Error occurred:",error);   
