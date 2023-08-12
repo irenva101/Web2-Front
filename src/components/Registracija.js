@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageUploader from "../services/ArtikalService";
+import jwtDecode from "jwt-decode";
 
 const Registracija = () => {
   const navigate = useNavigate();
@@ -67,6 +68,9 @@ const Registracija = () => {
       Body: "Postovani, uskoro cete primiti jos jedan mejl da Vas obavestimo o verifikaciji vaseg naloga.",
     };
 
+    var token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken["Id"]);
     // Ovde možete implementirati logiku za slanje podataka na server ili ih spremanje u lokalno skladište.
     fetch("https://localhost:44388/Korisnik", {
       method: "POST",
@@ -76,6 +80,7 @@ const Registracija = () => {
       }),
       headers: {
         "Content-Type": "application/json",
+        
       },
       mode: "cors",
     })

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import ImageUploader from "../services/KorisnikService";
+import jwtDecode from "jwt-decode";
 
 const Profil = () => {
   const [formData, setFormData] = useState({
@@ -35,13 +36,17 @@ const Profil = () => {
     setUploadedImage(imageData);
   };
 
+  var token = localStorage.getItem("token");
+  const decodedToken = jwtDecode(token);
+  console.log(decodedToken["Id"]);
   useEffect(() => {
-    fetch("https://localhost:44388/Korisnik?idKorisnika=4", {
+    fetch(`https://localhost:44388/Korisnik?idKorisnika=${decodedToken["Id"]}`, {
       //zakucala jednog korisnika
       method: "GET",
       // body: JSON.stringify(formData), //ne mogu slati body u get zahtevu
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       mode: "cors",
     })
@@ -118,11 +123,12 @@ const Profil = () => {
       postarina: postarinaRef.current,
     };
 
-    fetch("https://localhost:44388/Korisnik?idKorisnika=4", {
+    fetch(`https://localhost:44388/Korisnik?idKorisnika=${decodedToken["Id"]}`, {
       method: "PUT",
       body: JSON.stringify(formDataToSend),
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       mode: "cors",
     })
@@ -246,9 +252,10 @@ const Profil = () => {
             </div>
           )}
           <button type="submit">Sacuvaj izmene</button>
-          {isSuccess && <p style={{ color: "green" }}>Podaci su uspešno ažurirani!</p>}
+          {isSuccess && (
+            <p style={{ color: "green" }}>Podaci su uspešno ažurirani!</p>
+          )}
         </form>
-        
       ) : (
         <p>Ucitavanje podataka...</p>
       )}
