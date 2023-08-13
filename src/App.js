@@ -13,6 +13,7 @@ import NovePorudzbine from "./components/NovePorudzbine";
 import Verifikacija from "./components/Verifikacija";
 import PrikazVerifikacija from "./components/PrikazVerifikacija";
 import ProtectedRoute from "./helpers/ProtectedRoute";
+import SvePorudzbine from "./components/SvePorudzbine";
 
 const App = () => {
   return (
@@ -28,70 +29,38 @@ const App = () => {
           {/*Kupac moze da vidi */}
           <Route
             path="/ulogovan-korisnik/pregled-artikala"
-            element={
-              <ProtectedRoute
-                allowedRoles={["Kupac"]}
-                component={PregledArtikala}
-              />
-            }
+            element={<PregledArtikala/>}
           />
           <Route
             path="/ulogovan-korisnik/prethodne-porudzbine"
-            element={
-              <ProtectedRoute
-                allowedRoles={["Kupac"]}
-                component={PrethodnePorudzbine}
-              />
-            }
+            element={<PrethodnePorudzbine/>}
           />
           {/*Prodavac moze da vidi */}
-
           <Route
             path="/ulogovan-korisnik/dodaj-artikal"
-            element={
-              <ProtectedRoute
-                allowedRoles={["Prodavac"]}
-                component={DodavanjeArtikla}
-              />
-            }
+            element={<DodavanjeArtikla/>}
           />
           <Route
             path="/ulogovan-korisnik/moje-porudzbine"
-            element={
-              <ProtectedRoute
-                allowedRoles={["Prodavac"]}
-                component={StarePorudzbine}
-              />
-            }
+            element={<StarePorudzbine/>}
           />
           <Route
             path="/ulogovan-korisnik/nove-porudzbine"
-            element={
-              <ProtectedRoute
-                allowedRoles={["Prodavac"]}
-                component={NovePorudzbine}
-              />
-            }
+            element={<NovePorudzbine/>}
           />
           {/*Admin moze da vidi */}
           <Route
             path="/ulogovan-korisnik/verifikacija"
-            element={
-              <ProtectedRoute
-                allowedRoles={["Admin"]}
-                component={Verifikacija}
-              />
-            }
+            element={<Verifikacija/>}
           />
           <Route
             path="/ulogovan-korisnik/prikaz-verifikacija"
-            element={
-              <ProtectedRoute
-                allowedRoles={["Admin"]}
-                component={PrikazVerifikacija}
-              />
-            }
+            element={<PrikazVerifikacija/>}
           />
+          <Route 
+            path="/ulogovan-korisnik/sve-porudzbine"
+            element={<SvePorudzbine/>}
+            />
         </Routes>
       </BrowserRouter>
     </div>

@@ -16,7 +16,6 @@ const DodavanjeArtikla = () => {
   };
 
   const handleImageUpload = (imageData) => {
-    console.log(imageData + "irenaaaaaaaaaaaaaaaaaaaa")
     setUploadedImage(imageData);
     setSlikaArtikla(imageData);
   };
@@ -34,7 +33,6 @@ const DodavanjeArtikla = () => {
       slika: slikaArtikla
     };
 
-    console.log("Stigli smo do ovde ale");
 
     fetch(`https://localhost:44388/Artikal?idArtikla=${formDataToUpdate.id}`, {
       method: "PATCH",
@@ -151,6 +149,21 @@ const DodavanjeArtikla = () => {
   }, []);
 
   const handleSubmit = (e) => {
+
+    var token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token nije prisutan u localStorage-u.");
+      return; // Ovde možete izvršiti odgovarajuće akcije ukoliko token nije prisutan.
+    }
+
+    // Pretpostavićemo da se JWT token sastoji iz tri dela (header, payload, signature) razdvojenih tačkom.
+    var tokenParts = token.split(".");
+    if (tokenParts.length !== 3) {
+      console.error("Neispravan format tokena.");
+
+      return; // Ovde možete izvršiti odgovarajuće akcije ukoliko format nije ispravan.
+    }
+
     e.preventDefault();
     //dalje ide lgika za slanje
     const formDataToSend = {
@@ -167,6 +180,7 @@ const DodavanjeArtikla = () => {
       body: JSON.stringify(formDataToSend),
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       mode: "cors",
     })

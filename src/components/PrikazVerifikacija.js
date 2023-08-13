@@ -1,4 +1,5 @@
-import React,{useEffect, useState} from "react";;
+import React,{useEffect, useState} from "react";
+import jwtDecode from "jwt-decode";
 
 const PrikazVerifikacija=()=>{
 
@@ -23,6 +24,8 @@ const PrikazVerifikacija=()=>{
     
     useEffect(()=>{
         var token = localStorage.getItem("token");
+        const decodedToken = jwtDecode(token);
+        console.log(decodedToken["Id"]);
         fetch("https://localhost:44388/Korisnik/allKorisnike", {
             method: "GET",
             headers: {

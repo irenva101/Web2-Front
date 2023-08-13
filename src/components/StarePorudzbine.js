@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import jwtDecode from "jwt-decode";
 
 const StarePorudzbine=()=>{
 
@@ -11,10 +12,28 @@ const StarePorudzbine=()=>{
     }
 
     useEffect(()=>{
-        fetch("https://localhost:44388/Porudzbina/allPorudzbineProdavcaStare?korisnikId=11", {
+
+    var token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken["Id"]);
+    if (!token) {
+      console.error("Token nije prisutan u localStorage-u.");
+      return; // Ovde možete izvršiti odgovarajuće akcije ukoliko token nije prisutan.
+    }
+
+    // Pretpostavićemo da se JWT token sastoji iz tri dela (header, payload, signature) razdvojenih tačkom.
+    var tokenParts = token.split(".");
+    if (tokenParts.length !== 3) {
+      console.error("Neispravan format tokena.");
+
+      return; // Ovde možete izvršiti odgovarajuće akcije ukoliko format nije ispravan.
+    }
+
+        fetch(`https://localhost:44388/Porudzbina/allPorudzbineProdavcaStare?korisnikId=${decodedToken["Id"]}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
             mode: 'cors',
         })

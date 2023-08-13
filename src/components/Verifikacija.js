@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PrikazVerifikacija from "./PrikazVerifikacija";
+import jwtDecode from "jwt-decode";
 
 const Verifikacija = () => {
   const [prodavac, setProdavce] = useState([]);
@@ -14,20 +15,22 @@ const Verifikacija = () => {
   };
 
   useEffect(() => {
-    //slanje tokena u zaglavlju svakog zahteva
     var token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken["Id"]);
     if (!token) {
       console.error("Token nije prisutan u localStorage-u.");
       return; // Ovde možete izvršiti odgovarajuće akcije ukoliko token nije prisutan.
     }
-
+  
     // Pretpostavićemo da se JWT token sastoji iz tri dela (header, payload, signature) razdvojenih tačkom.
     var tokenParts = token.split(".");
     if (tokenParts.length !== 3) {
       console.error("Neispravan format tokena.");
-
+  
       return; // Ovde možete izvršiti odgovarajuće akcije ukoliko format nije ispravan.
     }
+    //slanje tokena u zaglavlju svakog zahteva
 
     fetch("https://localhost:44388/Korisnik/neverProdavce", {
       method: "GET",
@@ -67,11 +70,16 @@ const Verifikacija = () => {
       Body: "Postovani, vasa registracija je odobrena.",
     };
 
+    var token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken["Id"]);
+
     fetch(`https://localhost:44388/Korisnik/verProdavca?idKorisnika=${index}`, {
       method: "POST",
       body: JSON.stringify(index),
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       mode: "cors",
     })
@@ -83,6 +91,7 @@ const Verifikacija = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           mode: "cors",
         })
@@ -111,6 +120,8 @@ const Verifikacija = () => {
       Body: "Postovani, vasa registracija je odbijena.",
     };
 
+    var token = localStorage.getItem("token");
+
     fetch(
       `https://localhost:44388/Korisnik/neverProdavca?idKorisnika=${index}`,
       {
@@ -118,6 +129,7 @@ const Verifikacija = () => {
         body: JSON.stringify(index),
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         mode: "cors",
       }

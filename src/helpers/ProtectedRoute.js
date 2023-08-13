@@ -2,7 +2,8 @@ import React from "react";
 import { Route, Navigate } from 'react-router-dom';
 import jwtDecode from "jwt-decode";
 
-const ProtectedRoute = ({ element: Component, allowedRoles, ...rest }) => {
+const ProtectedRoute = ({ component: Component, allowedRoles, ...rest }) => {
+    
     const getUserRole = () => {
         var token = localStorage.getItem("token");
         if (token) {

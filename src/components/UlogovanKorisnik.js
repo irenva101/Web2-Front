@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link} from "react-router-dom";
 import React from "react";
 import jwtDecode from "jwt-decode";
-// import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const UlogovanKorisnik = () => {
   const getUserRole = () => {
@@ -20,10 +19,13 @@ const UlogovanKorisnik = () => {
   };
 
   var role = getUserRole();
+  console.log(role);
 
   return (
     <div>
       <h1 style={{ color: "#279980" }}>Pocetna stranica</h1>
+      
+
       {(role === "Kupac" || role === "Prodavac" || role === "Admin") && (
         <>
           <Link to="/ulogovan-korisnik/profil">Profil</Link>
@@ -56,8 +58,10 @@ const UlogovanKorisnik = () => {
         <>
           <Link to="/ulogovan-korisnik/verifikacija">Verifikacija</Link>
           <p></p>
+          <Link to="/ulogovan-korisnik/sve-porudzbine">Sve porudzbine</Link>
         </>
       )}
+      
     </div>
   );
 };
