@@ -56,22 +56,23 @@ const Registracija = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+  
     if (name === "email") {
       setEmail(value); // Ažuriramo email stanje
     }
-
-    const newValue = name === "datumRodjenja" ? new Date(value) : value;
-    const newTipKorisnika =
-      name === "tipKorisnika" && value === "Prodavac"
-        ? 1
-        : formData.tipKorisnika;
-
-    setFormData({
-      ...formData,
-      [name]: newValue,
-      tipKorisnika: newTipKorisnika,
-    });
+  
+    let newFormData = { ...formData };
+  
+    if (name === "tipKorisnika" && value === "Prodavac") {
+      newFormData.tipKorisnika = 1;
+    } else if (name === "tipKorisnika" && value === "Kupac") {
+      newFormData.tipKorisnika = 0;
+      newFormData.postarina = 0; // Resetujete postarinu kada se promeni tip korisnika
+    }
+  
+    newFormData[name] = name === "datumRodjenja" ? new Date(value) : value;
+  
+    setFormData(newFormData);
   };
 
   const handleImageChange = (e) => {

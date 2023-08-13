@@ -127,11 +127,16 @@ const PrethodnePorudzbine = () => {
               <td>
                 {porudzbina.artikli.map((artikal) => (
                   <div key={artikal.prodavacId}>
-                    <p>Naziv: {artikal.naziv}</p>
+                    <p>Naziv{artikal.naziv}</p>
                     <p>Cena: {artikal.cena}</p>
-                    <p>Kolicina: {artikal.kolicina}</p>
+                    
                     <p>Opis: {artikal.opis}</p>
-                    <p>Slika: {artikal.slika}</p>
+                    <p>Slika:</p>
+                    <img
+                  src={artikal.slika}
+                  alt={artikal.naziv}
+                  style={{ width: "100px" }}
+                />
                   </div>
                 ))}
               </td>
