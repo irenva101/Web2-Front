@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageUploader from "../services/ArtikalService";
 import jwtDecode from "jwt-decode";
+import { isPast, differenceInYears } from "date-fns";
 
 const Registracija = () => {
   const navigate = useNavigate();
@@ -9,13 +10,34 @@ const Registracija = () => {
   const [notificationMessage, setNotificationMessage] = useState("");
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [email, setEmail] = useState("");
+  const [isValid, setIsValid] = useState(true);
+  const [isTypingDate, setIsTypingDate] = useState(false);
 
   //slika
   const [UploadedImage, setUploadedImage] = useState(null);
-  const [slikaKorisnika,setSlikaKorisnika]=useState("");
+  const [slikaKorisnika, setSlikaKorisnika] = useState("");
   const handleImageUpload = (imageData) => {
     setUploadedImage(imageData);
     setSlikaKorisnika(imageData);
+  };
+
+  const handleDateChange = (e) => {
+    handleChange(e); // Prvo pozivamo handleChange funkciju da se ažurira formData
+    setIsTypingDate(true);
+  };
+
+  const handleBlurDate = () => {
+    setIsTypingDate(false);
+    if (
+      formData.datumRodjenja instanceof Date && // Provjerava da li je formData.datumRodjenja instanca Date objekta
+      (!isPast(formData.datumRodjenja) || differenceInYears(new Date(), formData.datumRodjenja) < 18)
+    ) {
+      setIsValid(false);
+      setNotificationMessage("Uneli ste neispravan datum rođenja. Morate biti punoletni da biste se registrovali.");
+      setShowNotification(true);
+    } else {
+      setIsValid(true);
+    }
   };
 
   const [formData, setFormData] = useState({
@@ -62,73 +84,85 @@ const Registracija = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const today = new Date();
+    const selectedDate = new Date(formData.datumRodjenja);
+    const age = differenceInYears(today, selectedDate);
+
+    if (isPast(selectedDate) && age >= 18) {
+      // Vaša postojeća logika za slanje forme na server
+      setIsValid(true);
+    } else {
+      setIsValid(false);
+      setNotificationMessage(
+        "Uneli ste neispravan datum rođenja. Morate biti punoletni da bi mogli da se registrujete."
+      );
+      setShowNotification(true);
+    }
+
     const emailData = {
       Receiver: email,
       Subject: "Registracija(WEB2)",
       Body: "Postovani, uskoro cete primiti jos jedan mejl da Vas obavestimo o verifikaciji vaseg naloga.",
     };
 
-    var token = localStorage.getItem("token");
-    const decodedToken = jwtDecode(token);
-    console.log(decodedToken["Id"]);
-    // Ovde možete implementirati logiku za slanje podataka na server ili ih spremanje u lokalno skladište.
-    fetch("https://localhost:44388/Korisnik", {
-      method: "POST",
-      body: JSON.stringify({
-        ...formData,
-        slikaKorisnika: slikaKorisnika,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-        
-      },
-      mode: "cors",
-    })
-      .then((Response) => Response.json())
-      .then((data) => {
-        //obrada odgovora servera
-
-        console.log(formData.tipKorisnika);
-        if (formData.tipKorisnika === 1) {
-          setNotificationMessage(
-            "Registracija je uspešno zabeležena. Sačekajte da se obradi. O uspesnoj registraciji bicete obavesteni putem e-mail adrese..."
-          );
-          setShowNotification(true);
-
-          console.log(emailData);
-          //slanje mejla
-          fetch("https://localhost:44388/Email/emailService", {
-            method: "POST",
-            body: JSON.stringify(emailData),
-            headers: {
-              "Content-Type": "application/json",
-            },
-            mode: "cors",
-          })
-            .then((Response) => Response.json())
-            .then((data) => {
-              console.log("POGODILI BEK.");
-            })
-            .catch((error) => {
-              //obrada greske
-              console.log("PUKLI");
-              console.log(error);
-            });
-
-          // Postavljanje tajmera za skrivanje notifikacije i navigaciju nakon 5 sekundi
-          setNotificationVisible(true);
-          setTimeout(() => {
-            setNotificationVisible(false);
-            navigate("/logovanje");
-          }, 5000); // 5000 milisekundi = 5 sekundi
-        } else {
-          navigate("/logovanje");
-        }
+    if (isValid) {
+      fetch("https://localhost:44388/Korisnik", {
+        method: "POST",
+        body: JSON.stringify({
+          ...formData,
+          slikaKorisnika: slikaKorisnika,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
       })
-      .catch((error) => {
-        //obrada greske
-        console.log(error);
-      });
+        .then((Response) => Response.json())
+        .then((data) => {
+          //obrada odgovora servera
+
+          console.log(formData.tipKorisnika);
+          if (formData.tipKorisnika === 1) {
+            setNotificationMessage(
+              "Registracija je uspešno zabeležena. Sačekajte da se obradi. O uspesnoj registraciji bicete obavesteni putem e-mail adrese..."
+            );
+            setShowNotification(true);
+
+            console.log(emailData);
+            //slanje mejla
+            fetch("https://localhost:44388/Email/emailService", {
+              method: "POST",
+              body: JSON.stringify(emailData),
+              headers: {
+                "Content-Type": "application/json",
+              },
+              mode: "cors",
+            })
+              .then((Response) => Response.json())
+              .then((data) => {
+                console.log("POGODILI BEK.");
+              })
+              .catch((error) => {
+                //obrada greske
+                console.log("PUKLI");
+                console.log(error);
+              });
+
+            // Postavljanje tajmera za skrivanje notifikacije i navigaciju nakon 5 sekundi
+            setNotificationVisible(true);
+            setTimeout(() => {
+              setNotificationVisible(false);
+              navigate("/logovanje");
+            }, 5000); // 5000 milisekundi = 5 sekundi
+          } else {
+            navigate("/logovanje");
+          }
+        })
+        .catch((error) => {
+          //obrada greske
+          console.log(error);
+        });
+    }
   };
 
   return (
@@ -196,11 +230,14 @@ const Registracija = () => {
           id="datumRodjenja"
           name="datumRodjenja"
           value={
-            formData.datumRodjenja
+            isTypingDate
+              ? formData.datumRodjenja
+              : formData.datumRodjenja instanceof Date // Provjerava da li je formData.datumRodjenja instanca Date objekta
               ? formData.datumRodjenja.toISOString().split("T")[0]
-              : ""
+              : "2000-01-01" // Defaultni datum ako formData.datumRodjenja nije instanca Date objekta
           }
-          onChange={handleChange}
+          onChange={handleDateChange}
+          onBlur={handleBlurDate}
           required
         />
         <br />
