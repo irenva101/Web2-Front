@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import ImageUploader from "../services/KorisnikService";
 import jwtDecode from "jwt-decode";
+import { Link } from "react-router-dom";
 
 const Profil = () => {
   const [formData, setFormData] = useState({
@@ -281,6 +282,7 @@ const Profil = () => {
           </div>
         )}
       </div>
+      <Link to="/ulogovan-korisnik">Nazad na pocetnu stranicu</Link>
     </div>
   );
 };

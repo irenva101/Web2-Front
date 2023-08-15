@@ -12,12 +12,70 @@ import StarePorudzbine from "./components/StarePorudzbine";
 import NovePorudzbine from "./components/NovePorudzbine";
 import Verifikacija from "./components/Verifikacija";
 import PrikazVerifikacija from "./components/PrikazVerifikacija";
-import ProtectedRoute from "./helpers/ProtectedRoute";
 import SvePorudzbine from "./components/SvePorudzbine";
+import { useEffect, useState } from "react";
+import jwtDecode from "jwt-decode";
 
 const App = () => {
+  const [user, setUser] = useState({});
+  const [temp, setTemp] = useState(false);
+
+  function handleCallbackResponse(response) {
+    console.log("Encoded JWT ID token: " + response.credential);
+
+    var userObject = jwtDecode(response.credential);
+    var email = userObject.email;
+    var ime = userObject.given_name;
+    console.log(userObject);
+
+    setUser(userObject);
+    //document.getElementById("signInDiv").hidden=true;
+
+    //slanje zahteva POST na server
+    fetch(
+      `https://localhost:44388/Korisnik/getKorisnikToken?email=${email}&ime=${ime}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        console.log("Response from server:", data);
+        var jwtToken = data["token"];
+        localStorage.setItem("token", jwtToken);
+        setTemp(true);
+        window.location.href = "/ulogovan-korisnik/profil";
+      })
+      .catch((error) => {
+        console.error("Error occurred:", error);
+      });
+  }
+
+  useEffect(() => {
+    /* global google */
+    google.accounts.id.initialize({
+      client_id:
+        "220695539326-hv8bcrgthi6ikj1sf0n1g2j2grbc4v9d.apps.googleusercontent.com",
+      callback: handleCallbackResponse,
+    });
+
+    // google.accounts.id.renderButton(document.getElementById("signInDiv"), {
+    //   theme: "outline",
+    //   size: "large",
+    // });
+
+    setTemp(false);
+
+    google.accounts.id.prompt();
+  }, []);
+
   return (
-    <div>
+    <div className="App">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<PocetnaStranica />} />
@@ -29,40 +87,41 @@ const App = () => {
           {/*Kupac moze da vidi */}
           <Route
             path="/ulogovan-korisnik/pregled-artikala"
-            element={<PregledArtikala/>}
+            element={<PregledArtikala />}
           />
           <Route
             path="/ulogovan-korisnik/prethodne-porudzbine"
-            element={<PrethodnePorudzbine/>}
+            element={<PrethodnePorudzbine />}
           />
           {/*Prodavac moze da vidi */}
           <Route
             path="/ulogovan-korisnik/dodaj-artikal"
-            element={<DodavanjeArtikla/>}
+            element={<DodavanjeArtikla />}
           />
           <Route
             path="/ulogovan-korisnik/moje-porudzbine"
-            element={<StarePorudzbine/>}
+            element={<StarePorudzbine />}
           />
           <Route
             path="/ulogovan-korisnik/nove-porudzbine"
-            element={<NovePorudzbine/>}
+            element={<NovePorudzbine />}
           />
           {/*Admin moze da vidi */}
           <Route
             path="/ulogovan-korisnik/verifikacija"
-            element={<Verifikacija/>}
+            element={<Verifikacija />}
           />
           <Route
             path="/ulogovan-korisnik/prikaz-verifikacija"
-            element={<PrikazVerifikacija/>}
+            element={<PrikazVerifikacija />}
           />
-          <Route 
+          <Route
             path="/ulogovan-korisnik/sve-porudzbine"
-            element={<SvePorudzbine/>}
-            />
+            element={<SvePorudzbine />}
+          />
         </Routes>
       </BrowserRouter>
+      <p></p>
     </div>
   );
 };
