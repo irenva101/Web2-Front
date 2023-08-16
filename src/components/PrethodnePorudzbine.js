@@ -6,7 +6,7 @@ const PrethodnePorudzbine = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("naziv");
   const [sortOrder, setSortOrder] = useState("asc");
-
+  
   const [formData, setFormData] = useState({
     korisnikId: 0,
     adresaDostave: "string",
@@ -35,10 +35,11 @@ const PrethodnePorudzbine = () => {
   useEffect(() => {
     var token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
+    var index=decodedToken["Id"];
     console.log(decodedToken["Id"]);
 
     fetch(
-      `https://localhost:44388/Porudzbina/allPorudzbineKorisnika?idKorisnika=${decodedToken["Id"]}`,
+      `https://localhost:44388/Porudzbina/allPorudzbineKorisnika?idKorisnika=${index}`,
       {
         method: "GET",
         headers: {
@@ -113,10 +114,10 @@ const PrethodnePorudzbine = () => {
       <table>
         <thead>
           <tr>
-            <th>Vreme isporuke</th>
-            <th>Adresa dostave</th>
-            <th>Artikli</th>
-            <th>Komentar</th>
+            <th style={{ color: "#279980" }}>Vreme isporuke</th>
+            <th style={{ color: "#279980" }}>Adresa dostave</th>
+            <th style={{ color: "#279980" }}>Artikli</th>
+            <th style={{ color: "#279980" }}>Komentar</th>
           </tr>
         </thead>
         <tbody>
@@ -126,17 +127,15 @@ const PrethodnePorudzbine = () => {
               <td>{porudzbina.adresaDostave}</td>
               <td>
                 {porudzbina.artikli.map((artikal) => (
-                  <div key={artikal.prodavacId}>
-                    <p>Naziv{artikal.naziv}</p>
-                    <p>Cena: {artikal.cena}</p>
-                    
-                    <p>Opis: {artikal.opis}</p>
-                    <p>Slika:</p>
+                  <div className="artikal-kartica" key={artikal.Id}>
                     <img
-                  src={artikal.slika}
-                  alt={artikal.naziv}
-                  style={{ width: "100px" }}
-                />
+                      src={artikal.slika}
+                      alt={artikal.naziv}
+                      className="artikal-slika"
+                    />
+                    <p className="artikal-naziv">{artikal.naziv}</p>
+                    <p className="artikal-cijena">Cena: {artikal.cena}</p>
+                    <p className="artikal-opis">Opis: {artikal.opis}</p>
                   </div>
                 ))}
               </td>
