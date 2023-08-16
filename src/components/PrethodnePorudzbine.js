@@ -6,6 +6,8 @@ const PrethodnePorudzbine = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("naziv");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [preostaloVreme, setPreostaloVreme] = useState({});
+  
   
   const [formData, setFormData] = useState({
     korisnikId: 0,
@@ -88,6 +90,46 @@ const PrethodnePorudzbine = () => {
   }
   //u principu bih trebala da sortiram po datumu, to ima najvise smisla
 
+  const calculateRemainingTime = (endTime) => {
+    const currentTime = new Date().getTime();
+    const endTimeMillis = new Date(endTime).getTime();
+    return Math.max(0, endTimeMillis - currentTime);
+  };
+
+  useEffect(() => {
+    // ... ostatak vašeg postojećeg useEffect-a ...
+
+    // Pokretanje intervala za ažuriranje preostalog vremena svake sekunde
+    const interval = setInterval(() => {
+      const updatedRemainingTimes = {};
+
+      porudzbine.forEach((porudzbina) => {
+        const remainingTime = calculateRemainingTime(porudzbina.vremeIsporuke);
+        updatedRemainingTimes[porudzbina.id] = remainingTime;
+      });
+
+      setPreostaloVreme(updatedRemainingTimes);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [porudzbine]);
+
+  // Funkcija za formatiranje preostalog vremena
+  const formatRemainingTime = (remainingTime) => {
+    const days = Math.floor(remainingTime / (24 * 60 * 60 * 1000));
+    const hours = Math.floor(
+      (remainingTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
+    );
+    const minutes = Math.floor(
+      (remainingTime % (60 * 60 * 1000)) / (60 * 1000)
+    );
+    const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  };
+
   return (
     <div>
       <h1>Prethodne porudzbine</h1>
@@ -118,6 +160,7 @@ const PrethodnePorudzbine = () => {
             <th style={{ color: "#279980" }}>Adresa dostave</th>
             <th style={{ color: "#279980" }}>Artikli</th>
             <th style={{ color: "#279980" }}>Komentar</th>
+            <th style={{ color: "#279980" }}>Vreme isporuke</th>
           </tr>
         </thead>
         <tbody>
@@ -140,6 +183,12 @@ const PrethodnePorudzbine = () => {
                 ))}
               </td>
               <td>{porudzbina.komentar}</td>
+              <td>
+                  {/* Prikaz preostalog vremena */}
+                  {preostaloVreme[porudzbina.id] > 0
+                    ? formatRemainingTime(preostaloVreme[porudzbina.id])
+                    : "Isporuceno"}
+                </td>
             </tr>
           ))}
         </tbody>

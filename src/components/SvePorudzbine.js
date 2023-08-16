@@ -9,6 +9,8 @@ const SvePorudzbine = () => {
   const [porudzbine, setPorudzbine] = useState([]);
   const [loading, setLoading] = useState(true);
   const [korisnici, setKorisnike] = useState([]);
+  // Novo stanje za praćenje preostalog vremena
+  const [preostaloVreme, setPreostaloVreme] = useState({});
 
   //funkcija koja nam formatira datum iz 2023-08-12T17:06:22.196 u 12-08-2023 17:06 i govori status
   const formatDateGetStatus = (dateString) => {
@@ -26,9 +28,9 @@ const SvePorudzbine = () => {
     const currentTime = new Date();
 
     if (date <= currentTime) {
-      return <span style={{ color: 'green' }}>Isporuceno</span>;
+      return <span style={{ color: "green" }}>Isporuceno</span>;
     } else {
-      return <span style={{ color: 'orange' }}>U toku je isporuka...</span>;
+      return <span style={{ color: "orange" }}>U toku je isporuka...</span>;
     }
   };
 
@@ -75,6 +77,47 @@ const SvePorudzbine = () => {
       });
   }, []);
 
+  // Funkcija za izračunavanje preostalog vremena
+  const calculateRemainingTime = (endTime) => {
+    const currentTime = new Date().getTime();
+    const endTimeMillis = new Date(endTime).getTime();
+    return Math.max(0, endTimeMillis - currentTime);
+  };
+
+  useEffect(() => {
+    // ... ostatak vašeg postojećeg useEffect-a ...
+
+    // Pokretanje intervala za ažuriranje preostalog vremena svake sekunde
+    const interval = setInterval(() => {
+      const updatedRemainingTimes = {};
+
+      porudzbine.forEach((porudzbina) => {
+        const remainingTime = calculateRemainingTime(porudzbina.vremeIsporuke);
+        updatedRemainingTimes[porudzbina.id] = remainingTime;
+      });
+
+      setPreostaloVreme(updatedRemainingTimes);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [porudzbine]);
+
+  // Funkcija za formatiranje preostalog vremena
+  const formatRemainingTime = (remainingTime) => {
+    const days = Math.floor(remainingTime / (24 * 60 * 60 * 1000));
+    const hours = Math.floor(
+      (remainingTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
+    );
+    const minutes = Math.floor(
+      (remainingTime % (60 * 60 * 1000)) / (60 * 1000)
+    );
+    const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  };
+
   return (
     <div>
       <h1>Prikaz svih porudzbina</h1>
@@ -90,16 +133,23 @@ const SvePorudzbine = () => {
               <th style={{ color: "#279980" }}>Adresa dostave</th>
               <th style={{ color: "#279980" }}>Komentar</th>
               <th style={{ color: "#279980" }}>Status</th>
+              <th style={{ color: "#279980" }}>Vreme do isporuke</th>
             </tr>
           </thead>
           <tbody>
             {porudzbine.map((porudzbina) => (
               <tr key={porudzbina.id}>
-                <td>{getUsernameKorisnika(porudzbina.korisnikId)}</td>{" "}
+                <td>{getUsernameKorisnika(porudzbina.korisnikId)}</td>
                 {/*ovde*/}
                 <td>{porudzbina.adresaDostave}</td>
                 <td>{porudzbina.komentar}</td>
                 <td>{formatDateGetStatus(porudzbina.vremeIsporuke)}</td>
+                <td>
+                  {/* Prikaz preostalog vremena */}
+                  {preostaloVreme[porudzbina.id] > 0
+                    ? formatRemainingTime(preostaloVreme[porudzbina.id])
+                    : "Isporuceno"}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -14,32 +14,15 @@ const PregledArtikala = () => {
   // Globalna promenljiva za ID-jeve artikala
   const [selectedArtikliIds, setSelectedArtikliIds] = useState([]);
 
-  const formatiranoTrenutnoVreme = () => {
-    const currentDate = new Date();
-    const formattedDate = currentDate.toLocaleDateString("en-GB", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
+  const formatiranoVremeIsporuke = () => {
+    const trenutnoVreme = new Date(); // Dobijamo trenutno vreme
 
-    const formattedTime = currentDate.toLocaleTimeString("en-US", {
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+  const minutiZaDodati = Math.floor(Math.random() * 100) + 80; // Nasumično između 80 i 179 minuta
+  trenutnoVreme.setMinutes(trenutnoVreme.getMinutes() + minutiZaDodati);
 
-    const stringovi = formattedDate.split("/");
-    const datum =
-      stringovi[2] +
-      "-" +
-      stringovi[1] +
-      "-" +
-      stringovi[0] +
-      "T" +
-      formattedTime +
-      ".196Z";
-    return datum;
+  const formatiranoVreme = trenutnoVreme.toISOString(); // Konvertujemo u ISO format
+
+  return formatiranoVreme;
   };
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -88,7 +71,7 @@ const PregledArtikala = () => {
       adresaDostave: adresa,
       komentar: komentar,
       korisnikId: decodedToken["Id"],
-      vremeIsporuke: formatiranoTrenutnoVreme(),
+      vremeIsporuke: formatiranoVremeIsporuke(),
       otkazana: false,
     };
 
@@ -132,7 +115,7 @@ const PregledArtikala = () => {
       body: JSON.stringify(zaSlanje),
       mode: "cors",
     })
-    .then((response) => response.json())
+      .then((response) => response.json())
       .then((data) => {
         // uspesno poslato serveru
         console.log("Artikli koje saljem za smanjenje kolicine:");
@@ -142,7 +125,6 @@ const PregledArtikala = () => {
       .catch((error) => {
         //greska prilikom slanja na server
         console.error("Greška prilikom smanjenja kolicine:", error);
-        
       });
   };
 
@@ -300,7 +282,7 @@ const PregledArtikala = () => {
   };
 
   const sortedArtikli = [...filteredArtikli]; // Kreiramo kopiju niza kako bismo sačuvali originalni niz nepromenjen
-  
+
   if (sortOption === "naziv") {
     // Sortiranje po nazivu (abecedno)
     sortedArtikli.sort((a, b) => a.naziv.localeCompare(b.naziv));

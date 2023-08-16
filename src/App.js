@@ -29,7 +29,7 @@ const App = () => {
     console.log(userObject);
 
     setUser(userObject);
-    //document.getElementById("signInDiv").hidden=true;
+    document.getElementById("signInDiv").hidden=true;
 
     //slanje zahteva POST na server
     fetch(
@@ -64,10 +64,10 @@ const App = () => {
       callback: handleCallbackResponse,
     });
 
-    // google.accounts.id.renderButton(document.getElementById("signInDiv"), {
-    //   theme: "outline",
-    //   size: "large",
-    // });
+    google.accounts.id.renderButton(document.getElementById("signInDiv"), {
+      theme: "outline",
+      size: "large",
+    });
 
     setTemp(false);
 
@@ -122,6 +122,9 @@ const App = () => {
         </Routes>
       </BrowserRouter>
       <p></p>
+      <div hidden id="signInDiv">
+
+      </div>
     </div>
   );
 };
