@@ -13,7 +13,7 @@ const SvePorudzbine = () => {
   const [preostaloVreme, setPreostaloVreme] = useState({});
 
   //funkcija koja nam formatira datum iz 2023-08-12T17:06:22.196 u 12-08-2023 17:06 i govori status
-  const formatDateGetStatus = (dateString) => {
+  const formatDateGetStatus = (dateString, otkazana) => {
     const options = {
       year: "numeric",
       month: "2-digit",
@@ -29,7 +29,10 @@ const SvePorudzbine = () => {
 
     if (date <= currentTime) {
       return <span style={{ color: "green" }}>Isporuceno</span>;
-    } else {
+    } else if(otkazana){
+      return <span style={{ color: "red" }}>Otkazana</span>;
+    }else{
+      
       return <span style={{ color: "orange" }}>U toku je isporuka...</span>;
     }
   };
@@ -134,6 +137,7 @@ const SvePorudzbine = () => {
               <th style={{ color: "#279980" }}>Komentar</th>
               <th style={{ color: "#279980" }}>Status</th>
               <th style={{ color: "#279980" }}>Vreme do isporuke</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -143,13 +147,15 @@ const SvePorudzbine = () => {
                 {/*ovde*/}
                 <td>{porudzbina.adresaDostave}</td>
                 <td>{porudzbina.komentar}</td>
-                <td>{formatDateGetStatus(porudzbina.vremeIsporuke)}</td>
+                <td>{formatDateGetStatus(porudzbina.vremeIsporuke, porudzbina.otkazana)}</td>
                 <td>
-                  {/* Prikaz preostalog vremena */}
-                  {preostaloVreme[porudzbina.id] > 0
+                  {porudzbina.otkazana
+                    ? "/"
+                    : preostaloVreme[porudzbina.id] > 0
                     ? formatRemainingTime(preostaloVreme[porudzbina.id])
                     : "Isporuceno"}
                 </td>
+                
               </tr>
             ))}
           </tbody>

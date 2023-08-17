@@ -7,8 +7,7 @@ const PrethodnePorudzbine = () => {
   const [sortOption, setSortOption] = useState("naziv");
   const [sortOrder, setSortOrder] = useState("asc");
   const [preostaloVreme, setPreostaloVreme] = useState({});
-  
-  
+
   const [formData, setFormData] = useState({
     korisnikId: 0,
     adresaDostave: "string",
@@ -28,7 +27,10 @@ const PrethodnePorudzbine = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, "0");
+    const day = date
+      .getDate()
+      .toString()
+      .padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
@@ -37,7 +39,7 @@ const PrethodnePorudzbine = () => {
   useEffect(() => {
     var token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
-    var index=decodedToken["Id"];
+    var index = decodedToken["Id"];
     console.log(decodedToken["Id"]);
 
     fetch(
@@ -130,6 +132,52 @@ const PrethodnePorudzbine = () => {
     return `${days}d ${hours}h ${minutes}m ${seconds}s`;
   };
 
+  const otkaziPorudzbinu = (porudzbina) => {
+    const existingPorudzbina = porudzbine.find(
+      (item) => item.Id === porudzbina.Id
+    );
+    const index=existingPorudzbina.id;
+    console.log(existingPorudzbina);
+    if (existingPorudzbina) {
+      //otkazi porudzbinu
+      fetch(
+        `https://localhost:44388/Porudzbina/cancelPorudzbina?idPorudzbine=${index}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          mode: "cors",
+        }
+      )
+        .then((responce) => responce.json())
+        .then((data) => {
+          alert("Uspesno je otkazana porudzbina");
+        })
+        .catch((error) => {
+          alert("Greška prilikom otkazivanja porudzbine");
+          console.error("Greška prilikom otkazivanja porudzbine", error);
+        });
+    }
+  };
+
+  function otkazivanjeUPrvihSatVremena(id) {
+    const porudzbina = porudzbine.find(p => p.id === id);
+
+    if (!porudzbina) {
+      return false; // Porudžbina sa datim ID nije pronađena
+      console.log("Porudžbina sa datim ID nije pronađena");
+    }
+
+    const trenutnoVreme = new Date();
+    console.log("Trenutno vreme: "+ trenutnoVreme);
+    const satVremenaUnapred = new Date(trenutnoVreme.getTime() + 60 * 60 * 1000);
+    console.log("Sat vremena unazad: "+ satVremenaUnapred);
+    console.log(porudzbina.vremePorucivanja >= satVremenaUnapred);
+    return porudzbina.vremePorucivanja >= satVremenaUnapred;
+  }
+  
+
   return (
     <div>
       <h1>Prethodne porudzbine</h1>
@@ -156,17 +204,19 @@ const PrethodnePorudzbine = () => {
       <table>
         <thead>
           <tr>
-            <th style={{ color: "#279980" }}>Vreme isporuke</th>
+            
             <th style={{ color: "#279980" }}>Adresa dostave</th>
             <th style={{ color: "#279980" }}>Artikli</th>
             <th style={{ color: "#279980" }}>Komentar</th>
             <th style={{ color: "#279980" }}>Vreme isporuke</th>
+            <th style={{ color: "#279980"}}>Otkazati?</th>
           </tr>
         </thead>
         <tbody>
-          {sortedPorudzbine.map((porudzbina) => (
+          {sortedPorudzbine
+          .filter((porudzbina) => !porudzbina.otkazana) //ne prikazuje otkazane porudzbine
+          .map((porudzbina) => (
             <tr key={porudzbina.vremeIsporuke}>
-              <td>{formatDate(porudzbina.vremeIsporuke)}</td>
               <td>{porudzbina.adresaDostave}</td>
               <td>
                 {porudzbina.artikli.map((artikal) => (
@@ -184,11 +234,23 @@ const PrethodnePorudzbine = () => {
               </td>
               <td>{porudzbina.komentar}</td>
               <td>
-                  {/* Prikaz preostalog vremena */}
-                  {preostaloVreme[porudzbina.id] > 0
-                    ? formatRemainingTime(preostaloVreme[porudzbina.id])
-                    : "Isporuceno"}
-                </td>
+                {/* Prikaz preostalog vremena */}
+                {preostaloVreme[porudzbina.id] > 0
+                  ? formatRemainingTime(preostaloVreme[porudzbina.id])
+                  : "Isporuceno"}
+              </td>
+              <td>
+                {!porudzbina.otkazana && !otkazivanjeUPrvihSatVremena(porudzbina.id) && (
+                  <button
+                  type="button"
+                  onClick={() => {
+                    otkaziPorudzbinu(porudzbina);
+                  }}
+                >
+                  Otkazi
+                </button>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

@@ -33,6 +33,7 @@ const PregledArtikala = () => {
   const [showPregledPorudzbine, setShowPregledPorudzbine] = useState(false);
   const odabraniArtikli = cartItems.filter((item) => item.kolicina > 0);
   const [prodavci, setProdavci] = useState("");
+  const [vremePorucivanja, setVremePorucivanja]=useState("");
 
   const posaljiPorudzbinuNaServer = () => {
     // Prvo kreiramo objekat koji sadrži sve potrebne informacije za porudžbinu
@@ -64,7 +65,8 @@ const PregledArtikala = () => {
 
       return; // Ovde možete izvršiti odgovarajuće akcije ukoliko format nije ispravan.
     }
-
+    
+    setVremePorucivanja(new Date());
     const porudzbina = {
       artikli: zaSlanje,
       ukupanIznos: ukupanIznos,
@@ -73,6 +75,7 @@ const PregledArtikala = () => {
       korisnikId: decodedToken["Id"],
       vremeIsporuke: formatiranoVremeIsporuke(),
       otkazana: false,
+      vremePorucivanja:vremePorucivanja
     };
 
     console.log(porudzbina);
