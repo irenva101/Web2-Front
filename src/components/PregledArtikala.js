@@ -13,16 +13,17 @@ const PregledArtikala = () => {
   const [cartItems, setCartItems] = useState([]);
   // Globalna promenljiva za ID-jeve artikala
   const [selectedArtikliIds, setSelectedArtikliIds] = useState([]);
+  const [kolicina, setKolicina] = useState("");
 
   const formatiranoVremeIsporuke = () => {
     const trenutnoVreme = new Date(); // Dobijamo trenutno vreme
 
-  const minutiZaDodati = Math.floor(Math.random() * 100) + 80; // Nasumično između 80 i 179 minuta
-  trenutnoVreme.setMinutes(trenutnoVreme.getMinutes() + minutiZaDodati);
+    const minutiZaDodati = Math.floor(Math.random() * 100) + 80; // Nasumično između 80 i 179 minuta
+    trenutnoVreme.setMinutes(trenutnoVreme.getMinutes() + minutiZaDodati);
 
-  const formatiranoVreme = trenutnoVreme.toISOString(); // Konvertujemo u ISO format
+    const formatiranoVreme = trenutnoVreme.toISOString(); // Konvertujemo u ISO format
 
-  return formatiranoVreme;
+    return formatiranoVreme;
   };
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,22 +34,32 @@ const PregledArtikala = () => {
   const [showPregledPorudzbine, setShowPregledPorudzbine] = useState(false);
   const odabraniArtikli = cartItems.filter((item) => item.kolicina > 0);
   const [prodavci, setProdavci] = useState("");
-  const [vremePorucivanja, setVremePorucivanja]=useState("");
+  const [vremePorucivanja, setVremePorucivanja] = useState("");
 
   const posaljiPorudzbinuNaServer = () => {
     // Prvo kreiramo objekat koji sadrži sve potrebne informacije za porudžbinu
 
-    const newSelectedArtikliIds = cartItems.map((item) => item.artikal.id);
+    console.log("Cart items: " + JSON.stringify(cartItems));
+    const newSelectedArtikliIds = [];
+    cartItems.forEach((item) => {
+      for (let i = 0; i < item.kolicina; i++) {
+        newSelectedArtikliIds.push(item.artikal.id);
+      }
+    });
     setSelectedArtikliIds(newSelectedArtikliIds);
 
     console.log(newSelectedArtikliIds);
     console.log(artikli);
 
-    const zaSlanje = artikli.filter((artikal) =>
-      newSelectedArtikliIds.includes(artikal.id)
-    );
+    const zaSlanje = newSelectedArtikliIds.reduce((selectedArtikli, artikalId) => {
+      const artikal = artikli.find((artikal) => artikal.id === artikalId);
+      if (artikal) {
+        selectedArtikli.push(artikal);
+      }
+      return selectedArtikli;
+    }, []);
 
-    console.log(zaSlanje);
+    console.log(JSON.stringify(zaSlanje) + "+++++++++++++++++++++++++++++++");
 
     var token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
@@ -65,7 +76,7 @@ const PregledArtikala = () => {
 
       return; // Ovde možete izvršiti odgovarajuće akcije ukoliko format nije ispravan.
     }
-    
+
     setVremePorucivanja(new Date());
     const porudzbina = {
       artikli: zaSlanje,
@@ -75,60 +86,64 @@ const PregledArtikala = () => {
       korisnikId: decodedToken["Id"],
       vremeIsporuke: formatiranoVremeIsporuke(),
       otkazana: false,
-      vremePorucivanja:vremePorucivanja
+      vremePorucivanja: vremePorucivanja,
     };
 
     console.log(porudzbina);
 
+    setTimeout(()=>{
+      fetch("https://localhost:44388/Porudzbina", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(porudzbina),
+        mode: "cors",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // uspesno poslato serveru
+          console.log("Sta saljem:");
+          console.log(data);
+          alert("Porudžbina je uspešno poslata!");
+  
+          setCartItems([]); // Resetujemo korpu nakon što je porudžbina poslata
+          setUkupanIznos(0); // Resetujemo ukupan iznos nakon što je porudžbina poslata
+          setAdresa(""); // Resetujemo polje za adresu nakon što je porudžbina poslata
+          setKomentar(""); // Resetujemo polje za komentar nakon što je porudžbina poslata
+        })
+        .catch((error) => {
+          //greska prilikom slanja na server
+          console.error("Greška prilikom slanja porudžbine:", error);
+          alert("Došlo je do greške prilikom slanja porudžbine.");
+        });
+    },1000);
+
     // Zatim koristimo fetch funkciju za slanje POST zahteva na server
-    fetch("https://localhost:44388/Porudzbina", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(porudzbina),
-      mode: "cors",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // uspesno poslato serveru
-        console.log("Sta saljem:");
-        console.log(data);
-        alert("Porudžbina je uspešno poslata!");
-
-        setCartItems([]); // Resetujemo korpu nakon što je porudžbina poslata
-        setUkupanIznos(0); // Resetujemo ukupan iznos nakon što je porudžbina poslata
-        setAdresa(""); // Resetujemo polje za adresu nakon što je porudžbina poslata
-        setKomentar(""); // Resetujemo polje za komentar nakon što je porudžbina poslata
+    setTimeout(() => {
+      fetch("https://localhost:44388/Artikal/UpdateKolicinu", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          //Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(zaSlanje),
+        mode: "cors",
       })
-      .catch((error) => {
-        //greska prilikom slanja na server
-        console.error("Greška prilikom slanja porudžbine:", error);
-        alert("Došlo je do greške prilikom slanja porudžbine.");
-      });
-
+        .then((response) => response.json())
+        .then((data) => {
+          // uspesno poslato serveru
+          console.log("Artikli koje saljem za smanjenje kolicine:");
+          console.log(data);
+          alert("Uspesno je smanjena kolicina artikala.");
+        })
+        .catch((error) => {
+          //greska prilikom slanja na server
+          console.error("Greška prilikom smanjenja kolicine:", error);
+        });
+    }, 2000);
     //nakon sto sam poslala porudzbinu da smanjim broj artikala
-    fetch("https://localhost:44388/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        //Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(zaSlanje),
-      mode: "cors",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // uspesno poslato serveru
-        console.log("Artikli koje saljem za smanjenje kolicine:");
-        console.log(data);
-        alert("Uspesno je smanjena kolicina artikala.");
-      })
-      .catch((error) => {
-        //greska prilikom slanja na server
-        console.error("Greška prilikom smanjenja kolicine:", error);
-      });
   };
 
   //funkcija koja dobavlja cenu postarine konkretnog prodavca

@@ -40,7 +40,7 @@ const PrethodnePorudzbine = () => {
     var token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
     var index = decodedToken["Id"];
-    console.log(decodedToken["Id"]);
+    //console.log(decodedToken["Id"]);
 
     fetch(
       `https://localhost:44388/Porudzbina/allPorudzbineKorisnika?idKorisnika=${index}`,
@@ -58,7 +58,7 @@ const PrethodnePorudzbine = () => {
         //obrada odgovora servera
         setPorudzbine(data);
         console.log(data);
-        console.log(data[0]["vremeIsporuke"]);
+        //console.log(data[0]["vremeIsporuke"]);
       })
       .catch((error) => {
         console.error(
@@ -132,27 +132,40 @@ const PrethodnePorudzbine = () => {
     return `${days}d ${hours}h ${minutes}m ${seconds}s`;
   };
 
-  const otkaziPorudzbinu = (porudzbina) => {
+  const otkaziPorudzbinu = (porudzbinaId) => {
     const existingPorudzbina = porudzbine.find(
-      (item) => item.Id === porudzbina.Id
+      (item) => item.id === porudzbinaId
+      
     );
-    const index=existingPorudzbina.id;
+    console.log(porudzbine);
+    console.log("JESMO LI DOBACILI DO OVDE");
+    console.log("PORUDZBINA--------"+porudzbinaId+"+++++++++++");
     console.log(existingPorudzbina);
+    
+    
+
+    // const vremeIsporuke=porudzbinaZaOtkazivanje["vremeIsporuke"];
+    // const vremePorucivanja=porudzbinaZaOtkazivanje["vremePorucivanja"];
+
+    // console.log(vremeIsporuke+"+++++++++++"+vremePorucivanja);
+
     if (existingPorudzbina) {
       //otkazi porudzbinu
       fetch(
-        `https://localhost:44388/Porudzbina/cancelPorudzbina?idPorudzbine=${index}`,
+        `https://localhost:44388/Porudzbina/cancelPorudzbina`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify(existingPorudzbina),
           mode: "cors",
         }
       )
         .then((responce) => responce.json())
         .then((data) => {
           alert("Uspesno je otkazana porudzbina");
+          console.log(data);
         })
         .catch((error) => {
           alert("Greška prilikom otkazivanja porudzbine");
@@ -162,21 +175,22 @@ const PrethodnePorudzbine = () => {
   };
 
   function otkazivanjeUPrvihSatVremena(id) {
-    const porudzbina = porudzbine.find(p => p.id === id);
+    const porudzbina = porudzbine.find((p) => p.id === id);
 
     if (!porudzbina) {
-      return false; // Porudžbina sa datim ID nije pronađena
       console.log("Porudžbina sa datim ID nije pronađena");
+      return false; // Porudžbina sa datim ID nije pronađena
     }
 
     const trenutnoVreme = new Date();
-    console.log("Trenutno vreme: "+ trenutnoVreme);
-    const satVremenaUnapred = new Date(trenutnoVreme.getTime() + 60 * 60 * 1000);
-    console.log("Sat vremena unazad: "+ satVremenaUnapred);
-    console.log(porudzbina.vremePorucivanja >= satVremenaUnapred);
+    //console.log("Trenutno vreme: "+ trenutnoVreme);
+    const satVremenaUnapred = new Date(
+      trenutnoVreme.getTime() + 60 * 60 * 1000
+    );
+    //console.log("Sat vremena unazad: "+ satVremenaUnapred);
+    //console.log(porudzbina.vremePorucivanja >= satVremenaUnapred);
     return porudzbina.vremePorucivanja >= satVremenaUnapred;
   }
-  
 
   return (
     <div>
@@ -204,55 +218,57 @@ const PrethodnePorudzbine = () => {
       <table>
         <thead>
           <tr>
-            
             <th style={{ color: "#279980" }}>Adresa dostave</th>
             <th style={{ color: "#279980" }}>Artikli</th>
             <th style={{ color: "#279980" }}>Komentar</th>
             <th style={{ color: "#279980" }}>Vreme isporuke</th>
-            <th style={{ color: "#279980"}}>Otkazati?</th>
+            <th style={{ color: "#279980" }}>Otkazati?</th>
           </tr>
         </thead>
         <tbody>
           {sortedPorudzbine
-          .filter((porudzbina) => !porudzbina.otkazana) //ne prikazuje otkazane porudzbine
-          .map((porudzbina) => (
-            <tr key={porudzbina.vremeIsporuke}>
-              <td>{porudzbina.adresaDostave}</td>
-              <td>
-                {porudzbina.artikli.map((artikal) => (
-                  <div className="artikal-kartica" key={artikal.Id}>
-                    <img
-                      src={artikal.slika}
-                      alt={artikal.naziv}
-                      className="artikal-slika"
-                    />
-                    <p className="artikal-naziv">{artikal.naziv}</p>
-                    <p className="artikal-cijena">Cena: {artikal.cena}</p>
-                    <p className="artikal-opis">Opis: {artikal.opis}</p>
-                  </div>
-                ))}
-              </td>
-              <td>{porudzbina.komentar}</td>
-              <td>
-                {/* Prikaz preostalog vremena */}
-                {preostaloVreme[porudzbina.id] > 0
-                  ? formatRemainingTime(preostaloVreme[porudzbina.id])
-                  : "Isporuceno"}
-              </td>
-              <td>
-                {!porudzbina.otkazana && !otkazivanjeUPrvihSatVremena(porudzbina.id) && (
-                  <button
-                  type="button"
-                  onClick={() => {
-                    otkaziPorudzbinu(porudzbina);
-                  }}
-                >
-                  Otkazi
-                </button>
-                )}
-              </td>
-            </tr>
-          ))}
+            .filter((porudzbina) => !porudzbina.otkazana) //ne prikazuje otkazane porudzbine
+            .map((porudzbina) => (
+              <tr key={porudzbina.vremeIsporuke}>
+                <td>{porudzbina.adresaDostave}</td>
+                <td>
+                  {porudzbina.artikli.map((artikal) => (
+                    <div className="artikal-kartica" key={artikal.Id}>
+                      <img
+                        src={artikal.slika}
+                        alt={artikal.naziv}
+                        className="artikal-slika"
+                        style={{ width: "100px" }}
+                      />
+                      <p className="artikal-naziv">{artikal.naziv}</p>
+                      <p className="artikal-cijena">Cena: {artikal.cena}</p>
+                      <p className="artikal-opis">Opis: {artikal.opis}</p>
+                    </div>
+                  ))}
+                </td>
+                <td>{porudzbina.komentar}</td>
+                <td>
+                  {/* Prikaz preostalog vremena */}
+                  {preostaloVreme[porudzbina.id] > 0
+                    ? formatRemainingTime(preostaloVreme[porudzbina.id])
+                    : "Isporuceno"}
+                </td>
+                <td>
+                  {!porudzbina.otkazana &&
+                    !otkazivanjeUPrvihSatVremena(porudzbina.id) &&
+                    preostaloVreme[porudzbina.id] > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          otkaziPorudzbinu(porudzbina.id);
+                        }}
+                      >
+                        Otkazi
+                      </button>
+                    )}
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

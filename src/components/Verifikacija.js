@@ -22,12 +22,12 @@ const Verifikacija = () => {
       console.error("Token nije prisutan u localStorage-u.");
       return; // Ovde možete izvršiti odgovarajuće akcije ukoliko token nije prisutan.
     }
-  
+
     // Pretpostavićemo da se JWT token sastoji iz tri dela (header, payload, signature) razdvojenih tačkom.
     var tokenParts = token.split(".");
     if (tokenParts.length !== 3) {
       console.error("Neispravan format tokena.");
-  
+
       return; // Ovde možete izvršiti odgovarajuće akcije ukoliko format nije ispravan.
     }
     //slanje tokena u zaglavlju svakog zahteva
@@ -79,7 +79,7 @@ const Verifikacija = () => {
       body: JSON.stringify(index),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       mode: "cors",
     })
@@ -186,7 +186,13 @@ const Verifikacija = () => {
           <tbody>
             {prodavac.map((prodavac) => (
               <tr key={prodavac.id}>
-                <td>{prodavac.slikaKorisnika}</td>
+                <td>
+                  <img
+                    src={prodavac.slikaKorisnika}
+                    alt="Ucitavnje slike"
+                    style={{ width: "100px" }}
+                  />
+                </td>
                 <td>{prodavac.korisnickoIme}</td>
                 <td>{prodavac.ime}</td>
                 <td>{prodavac.prezime}</td>

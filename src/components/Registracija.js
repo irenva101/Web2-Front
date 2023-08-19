@@ -57,20 +57,22 @@ const Registracija = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
   
-    if (name === "email") {
+    if (name === "Email") {
       setEmail(value); // Ažuriramo email stanje
     }
   
     let newFormData = { ...formData };
   
-    if (name === "tipKorisnika" && value === "Prodavac") {
-      newFormData.tipKorisnika = 1;
-    } else if (name === "tipKorisnika" && value === "Kupac") {
-      newFormData.tipKorisnika = 0;
-      newFormData.postarina = 0; // Resetujete postarinu kada se promeni tip korisnika
+    if (name === "TipKorisnika") {
+      if (value === "Prodavac") {
+        newFormData.TipKorisnika = 1;
+      } else if (value === "Kupac") {
+        newFormData.TipKorisnika = 0;
+        newFormData.Postarina = 0; // Resetujete postarinu kada se promeni tip korisnika
+      }
+    } else {
+      newFormData[name] = name === "datumRodjenja" ? new Date(value) : value;
     }
-  
-    newFormData[name] = name === "datumRodjenja" ? new Date(value) : value;
   
     setFormData(newFormData);
   };
@@ -78,7 +80,7 @@ const Registracija = () => {
   const handleImageChange = (e) => {
     setFormData({
       ...formData,
-      slika: e.target.files[0],
+      SlikaKorisnika: e.target.files[0],
     });
   };
 
@@ -107,6 +109,7 @@ const Registracija = () => {
     };
 
     if (isValid) {
+      console.log(formData);
       fetch("https://localhost:44388/Korisnik", {
         method: "POST",
         body: JSON.stringify({
@@ -122,8 +125,8 @@ const Registracija = () => {
         .then((data) => {
           //obrada odgovora servera
 
-          console.log(formData.tipKorisnika);
-          if (formData.tipKorisnika === 1) {
+          console.log(formData.TipKorisnika);
+          if (formData.TipKorisnika === 1) {
             setNotificationMessage(
               "Registracija je uspešno zabeležena. Sačekajte da se obradi. O uspesnoj registraciji bicete obavesteni putem e-mail adrese..."
             );
@@ -174,8 +177,8 @@ const Registracija = () => {
         <input
           type="text"
           id="korisnickoIme"
-          name="korisnickoIme"
-          value={formData.korisnickoIme}
+          name="KorisnickoIme"
+          value={formData.KorisnickoIme}
           onChange={handleChange}
           required
         />
@@ -185,8 +188,8 @@ const Registracija = () => {
         <input
           type="email"
           id="email"
-          name="email"
-          value={formData.email}
+          name="Email"
+          value={formData.Email}
           onChange={handleChange}
           required
         />
@@ -196,8 +199,8 @@ const Registracija = () => {
         <input
           type="password"
           id="lozinka"
-          name="lozinka"
-          value={formData.lozinka}
+          name="Lozinka"
+          value={formData.Lozinka}
           onChange={handleChange}
           required
         />
@@ -207,8 +210,8 @@ const Registracija = () => {
         <input
           type="text"
           id="ime"
-          name="ime"
-          value={formData.ime}
+          name="Ime"
+          value={formData.Ime}
           onChange={handleChange}
           required
         />
@@ -218,8 +221,8 @@ const Registracija = () => {
         <input
           type="text"
           id="prezime"
-          name="prezime"
-          value={formData.prezime}
+          name="Prezime"
+          value={formData.Prezime}
           onChange={handleChange}
           required
         />
@@ -229,12 +232,12 @@ const Registracija = () => {
         <input
           type="date"
           id="datumRodjenja"
-          name="datumRodjenja"
+          name="DatumRodjenja"
           value={
             isTypingDate
-              ? formData.datumRodjenja
-              : formData.datumRodjenja instanceof Date // Provjerava da li je formData.datumRodjenja instanca Date objekta
-              ? formData.datumRodjenja.toISOString().split("T")[0]
+              ? formData.DatumRodjenja
+              : formData.DatumRodjenja instanceof Date // Provjerava da li je formData.datumRodjenja instanca Date objekta
+              ? formData.DatumRodjenja.toISOString().split("T")[0]
               : "2000-01-01" // Defaultni datum ako formData.datumRodjenja nije instanca Date objekta
           }
           onChange={handleDateChange}
@@ -247,18 +250,18 @@ const Registracija = () => {
         <input
           type="text"
           id="adresa"
-          name="adresa"
-          value={formData.adresa}
+          name="Adresa"
+          value={formData.Adresa}
           onChange={handleChange}
           required
         />
         <br />
 
-        <label htmlFor="tipKorisnika">Tip korisnika:</label>
+        <label htmlFor="TipKorisnika">Tip korisnika:</label>
         <select
           id="tipKorisnika"
-          name="tipKorisnika"
-          value={formData.tipKorisnika}
+          name="TipKorisnika"
+          value={formData.TipKorisnika}
           onChange={handleChange}
           required
         >
@@ -267,14 +270,14 @@ const Registracija = () => {
         </select>
         <br />
 
-        {formData.tipKorisnika === "Prodavac" && (
+        {formData.TipKorisnika === "Prodavac" && (
           <div>
             <label htmlFor="postarina">Postarina:</label>
             <input
               type="number"
               id="postarina"
-              name="postarina"
-              value={formData.postarina}
+              name="Postarina"
+              value={formData.Postarina}
               onChange={handleChange}
               required
             />

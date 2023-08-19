@@ -38,6 +38,7 @@ const PrikazVerifikacija=()=>{
         .then((data)=>{
             const prodavci=data.filter(korisnik=>korisnik.tipKorisnika ===1);
             setProdavce(prodavci);
+            console.log(prodavci);
             setLoading(false);
 
         })
@@ -73,7 +74,13 @@ const PrikazVerifikacija=()=>{
                     <tbody>
                     {prodavac.map((prodavac)=>(
                         <tr key={prodavac.id}>
-                            <td>{prodavac.slikaKorisnika}</td>
+                            <td>
+                                <img
+                                    src={prodavac.slikaKorisnika}
+                                    alt="Ucitavnje slike"
+                                    style={{ width: "100px" }}
+                                />
+                            </td>
                             <td>{prodavac.korisnickoIme}</td>
                             <td>{prodavac.ime}</td>
                             <td>{prodavac.prezime}</td>
