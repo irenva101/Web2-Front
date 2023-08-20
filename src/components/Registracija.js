@@ -12,6 +12,8 @@ const Registracija = () => {
   const [email, setEmail] = useState("");
   const [isValid, setIsValid] = useState(true);
   const [isTypingDate, setIsTypingDate] = useState(false);
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [isPasswordMatch, setIsPasswordMatch] = useState(true);
 
   //slika
   const [UploadedImage, setUploadedImage] = useState(null);
@@ -19,6 +21,17 @@ const Registracija = () => {
   const handleImageUpload = (imageData) => {
     setUploadedImage(imageData);
     setSlikaKorisnika(imageData);
+  };
+  //poredjenje sifri
+  const handlePasswordConfirmationChange = (e) => {
+    const confirmationValue = e.target.value;
+    setPasswordConfirmation(confirmationValue);
+
+    if (confirmationValue === formData.Lozinka) {
+      setIsPasswordMatch(true);
+    } else {
+      setIsPasswordMatch(false);
+    }
   };
 
   const handleDateChange = (e) => {
@@ -30,10 +43,13 @@ const Registracija = () => {
     setIsTypingDate(false);
     if (
       formData.datumRodjenja instanceof Date && // Provjerava da li je formData.datumRodjenja instanca Date objekta
-      (!isPast(formData.datumRodjenja) || differenceInYears(new Date(), formData.datumRodjenja) < 18)
+      (!isPast(formData.datumRodjenja) ||
+        differenceInYears(new Date(), formData.datumRodjenja) < 18)
     ) {
       setIsValid(false);
-      setNotificationMessage("Uneli ste neispravan datum rođenja. Morate biti punoletni da biste se registrovali.");
+      setNotificationMessage(
+        "Uneli ste neispravan datum rođenja. Morate biti punoletni da biste se registrovali."
+      );
       setShowNotification(true);
     } else {
       setIsValid(true);
@@ -56,13 +72,13 @@ const Registracija = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
+
     if (name === "Email") {
       setEmail(value); // Ažuriramo email stanje
     }
-  
+
     let newFormData = { ...formData };
-  
+
     if (name === "TipKorisnika") {
       if (value === "Prodavac") {
         newFormData.TipKorisnika = 1;
@@ -73,7 +89,7 @@ const Registracija = () => {
     } else {
       newFormData[name] = name === "datumRodjenja" ? new Date(value) : value;
     }
-  
+
     setFormData(newFormData);
   };
 
@@ -102,10 +118,18 @@ const Registracija = () => {
       setShowNotification(true);
     }
 
+    if(!isPasswordMatch){
+      setIsValid(false);
+      setNotificationMessage("Lozinke se ne podudaraju.");
+      setShowNotification(true);
+      return;
+    }
+
     const emailData = {
       Receiver: email,
       Subject: "Registracija(WEB2)",
-      Body: "Postovani, uskoro cete primiti jos jedan mejl da Vas obavestimo o verifikaciji vaseg naloga.",
+      Body:
+        "Postovani, uskoro cete primiti jos jedan mejl da Vas obavestimo o verifikaciji vaseg naloga.",
     };
 
     if (isValid) {
@@ -205,6 +229,21 @@ const Registracija = () => {
           required
         />
         <br />
+
+        <label htmlFor="potvrdaLozinke">Potvrdi lozinku:</label>
+        <input
+          type="password"
+          id="potvrdaLozinke"
+          name="PotvrdaLozinke"
+          value={passwordConfirmation}
+          onChange={handlePasswordConfirmationChange}
+          required
+        />
+        <br />
+
+        {!isPasswordMatch && (
+          <div style={{ color: "red" }}>Lozinke se ne podudaraju.</div>
+        )}
 
         <label htmlFor="ime">Ime:</label>
         <input

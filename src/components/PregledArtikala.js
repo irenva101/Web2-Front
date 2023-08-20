@@ -3,6 +3,7 @@ import DetaljiArtikla from "./DetaljiArtikla";
 import chartSlika from "../images/chart.png";
 import Korpa from "./Korpa";
 import jwtDecode from "jwt-decode";
+import { format } from "date-fns";
 
 const PregledArtikala = () => {
   const [artikli, setArtikli] = useState([]);
@@ -15,15 +16,19 @@ const PregledArtikala = () => {
   const [selectedArtikliIds, setSelectedArtikliIds] = useState([]);
   const [kolicina, setKolicina] = useState("");
 
-  const formatiranoVremeIsporuke = () => {
-    const trenutnoVreme = new Date(); // Dobijamo trenutno vreme
-
-    const minutiZaDodati = Math.floor(Math.random() * 100) + 80; // Nasumično između 80 i 179 minuta
-    trenutnoVreme.setMinutes(trenutnoVreme.getMinutes() + minutiZaDodati);
-
-    const formatiranoVreme = trenutnoVreme.toISOString(); // Konvertujemo u ISO format
-
-    return formatiranoVreme;
+  const formatiranoVremeIsporuke = (vremePorucivanja) => {
+    console.log("VREME PORUCIVANJA: "+vremePorucivanja);
+    if(vremePorucivanja){
+      const minutiZaDodati = Math.floor(Math.random() * 100) + 60;
+      //console.log("Minuti za dodati: "+minutiZaDodati);
+      const novoVreme = new Date(vremePorucivanja);
+      novoVreme.setMinutes(vremePorucivanja.getMinutes() + minutiZaDodati);
+      console.log("VREME ISPORUKE: "+ novoVreme);
+      return novoVreme;
+      
+    }else{
+      return alert("VREME PORUCIVANJA NULL");
+    }
   };
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,11 +39,12 @@ const PregledArtikala = () => {
   const [showPregledPorudzbine, setShowPregledPorudzbine] = useState(false);
   const odabraniArtikli = cartItems.filter((item) => item.kolicina > 0);
   const [prodavci, setProdavci] = useState("");
-  const [vremePorucivanja, setVremePorucivanja] = useState("");
+  //const [vremePorucivanja, setVremePorucivanja] = useState(new Date());
+  //console.log(vremePorucivanja);
 
-  const posaljiPorudzbinuNaServer = () => {
+  const posaljiPorudzbinuNaServer=()=>{
     // Prvo kreiramo objekat koji sadrži sve potrebne informacije za porudžbinu
-
+    
     console.log("Cart items: " + JSON.stringify(cartItems));
     const newSelectedArtikliIds = [];
     cartItems.forEach((item) => {
@@ -51,13 +57,16 @@ const PregledArtikala = () => {
     console.log(newSelectedArtikliIds);
     console.log(artikli);
 
-    const zaSlanje = newSelectedArtikliIds.reduce((selectedArtikli, artikalId) => {
-      const artikal = artikli.find((artikal) => artikal.id === artikalId);
-      if (artikal) {
-        selectedArtikli.push(artikal);
-      }
-      return selectedArtikli;
-    }, []);
+    const zaSlanje = newSelectedArtikliIds.reduce(
+      (selectedArtikli, artikalId) => {
+        const artikal = artikli.find((artikal) => artikal.id === artikalId);
+        if (artikal) {
+          selectedArtikli.push(artikal);
+        }
+        return selectedArtikli;
+      },
+      []
+    );
 
     console.log(JSON.stringify(zaSlanje) + "+++++++++++++++++++++++++++++++");
 
@@ -77,48 +86,51 @@ const PregledArtikala = () => {
       return; // Ovde možete izvršiti odgovarajuće akcije ukoliko format nije ispravan.
     }
 
-    setVremePorucivanja(new Date());
+    const vremePorucivanja=new Date();
+    const vremeIsporuke = formatiranoVremeIsporuke(vremePorucivanja);
+
+    console.log("-----------------VREME PORUCIVANJA: "+ vremePorucivanja);
+    console.log("-----------------VREME ISPORUKE :"+ vremeIsporuke);
+    
     const porudzbina = {
       artikli: zaSlanje,
       ukupanIznos: ukupanIznos,
       adresaDostave: adresa,
       komentar: komentar,
       korisnikId: decodedToken["Id"],
-      vremeIsporuke: formatiranoVremeIsporuke(),
-      otkazana: false,
       vremePorucivanja: vremePorucivanja,
+      vremeIsporuke: vremeIsporuke,
+      otkazana: false,
     };
 
-    console.log(porudzbina);
+    console.log(JSON.stringify(porudzbina));
 
-    setTimeout(()=>{
-      fetch("https://localhost:44388/Porudzbina", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(porudzbina),
-        mode: "cors",
+    fetch("https://localhost:44388/Porudzbina", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(porudzbina),
+      mode: "cors",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // uspesno poslato serveru
+        console.log("Sta saljem:");
+        console.log(data);
+        alert("Porudžbina je uspešno poslata!");
+
+        setCartItems([]); // Resetujemo korpu nakon što je porudžbina poslata
+        setUkupanIznos(0); // Resetujemo ukupan iznos nakon što je porudžbina poslata
+        setAdresa(""); // Resetujemo polje za adresu nakon što je porudžbina poslata
+        setKomentar(""); // Resetujemo polje za komentar nakon što je porudžbina poslata
       })
-        .then((response) => response.json())
-        .then((data) => {
-          // uspesno poslato serveru
-          console.log("Sta saljem:");
-          console.log(data);
-          alert("Porudžbina je uspešno poslata!");
-  
-          setCartItems([]); // Resetujemo korpu nakon što je porudžbina poslata
-          setUkupanIznos(0); // Resetujemo ukupan iznos nakon što je porudžbina poslata
-          setAdresa(""); // Resetujemo polje za adresu nakon što je porudžbina poslata
-          setKomentar(""); // Resetujemo polje za komentar nakon što je porudžbina poslata
-        })
-        .catch((error) => {
-          //greska prilikom slanja na server
-          console.error("Greška prilikom slanja porudžbine:", error);
-          alert("Došlo je do greške prilikom slanja porudžbine.");
-        });
-    },1000);
+      .catch((error) => {
+        //greska prilikom slanja na server
+        console.error("Greška prilikom slanja porudžbine:", error);
+        alert("Došlo je do greške prilikom slanja porudžbine.");
+      });
 
     // Zatim koristimo fetch funkciju za slanje POST zahteva na server
     setTimeout(() => {
@@ -477,7 +489,7 @@ const PregledArtikala = () => {
                 )}
               </h2>
             </div>
-            <button onClick={posaljiPorudzbinuNaServer}>Poruči</button>
+            <button onClick={() => posaljiPorudzbinuNaServer()}>Poruči</button>
           </div>
         )}
       </div>
