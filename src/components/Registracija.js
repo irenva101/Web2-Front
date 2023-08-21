@@ -20,7 +20,6 @@ const Registracija = () => {
   const [slikaKorisnika, setSlikaKorisnika] = useState("");
   const [tipKorisnika, setTipKorisnika] = useState(0);
   const [postarina, setPostarina] = useState(0);
-  
 
   const [formData, setFormData] = useState({
     KorisnickoIme: "",
@@ -62,11 +61,11 @@ const Registracija = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     //dalje logika za slanje na server
-    let temp=0;
-    if(tipKorisnika==="Prodavac"){
-      temp=1;
-    }else if(tipKorisnika==="Kupac"){
-      temp=0;
+    let temp = 0;
+    if (tipKorisnika === "Prodavac") {
+      temp = 1;
+    } else if (tipKorisnika === "Kupac") {
+      temp = 0;
     }
     console.log(
       JSON.stringify({
@@ -77,30 +76,32 @@ const Registracija = () => {
       })
     );
     //const firstFetchPromise = new Promise((resolve, reject) => {
-      //setTimeout(() => {
-        fetch("https://localhost:44388/Korisnik", {
-          method: "POST",
-          body: JSON.stringify({
-            ...formData,
-            DatumRodjenja: selectDate,
-            SlikaKorisnika: slikaKorisnika,
-            TipKorisnika: temp,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          mode: "cors",
-        })
-          .then((Response) => Response.json())
-          .then((data) => {
-            console.log("POSLALI SMO NA BEK");
-            console.log("Sta je bek vratio nakon kreiranja korisnika: "+JSON.stringify(data));
-            //resolve(data); // RESOLVE NAKON STO SE ZAVRSI
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      //}, 2000);
+    //setTimeout(() => {
+    fetch("https://localhost:44388/Korisnik", {
+      method: "POST",
+      body: JSON.stringify({
+        ...formData,
+        DatumRodjenja: selectDate,
+        SlikaKorisnika: slikaKorisnika,
+        TipKorisnika: temp,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+    })
+      .then((Response) => Response.json())
+      .then((data) => {
+        console.log("POSLALI SMO NA BEK");
+        console.log(
+          "Sta je bek vratio nakon kreiranja korisnika: " + JSON.stringify(data)
+        );
+        //resolve(data); // RESOLVE NAKON STO SE ZAVRSI
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    //}, 2000);
     //});
 
     if (formData.TipKorisnika === "Prodavac") {
@@ -117,27 +118,27 @@ const Registracija = () => {
       };
       console.log(JSON.stringify(emailData));
 
-      
-        //await firstFetchPromise;
-        fetch( //pre fetch ide await
-          "https://localhost:44388/Email/emailService",
-          {
-            method: "POST",
-            body: JSON.stringify(emailData),
-            headers: {
-              "Content-Type": "application/json",
-            },
-            mode: "cors",
-          })
-          .then((response)=>response.json())
-          .then((data)=>{
-            console.log("POGODILI BEK.");
-          })
-          .catch((error)=>{
-            console.log(error);
-          });
-        
-       
+      //await firstFetchPromise;
+      fetch(
+        //pre fetch ide await
+        "https://localhost:44388/Email/emailService",
+        {
+          method: "POST",
+          body: JSON.stringify(emailData),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          mode: "cors",
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("POGODILI BEK.");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
       setNotificationVisible(true);
 
       setTimeout(() => {
@@ -307,6 +308,10 @@ const Registracija = () => {
       {showNotification && (
         <div className="notification">{notificationMessage}</div>
       )}
+
+      <div>
+        
+      </div>
     </div>
   );
 };
