@@ -19,60 +19,8 @@ import jwtDecode from "jwt-decode";
 const App = () => {
   const [user, setUser] = useState({});
   const [temp, setTemp] = useState(false);
-
-  function handleCallbackResponse(response) {
-    console.log("Encoded JWT ID token: " + response.credential);
-
-    var userObject = jwtDecode(response.credential);
-    var email = userObject.email;
-    var ime = userObject.given_name;
-    console.log(userObject);
-
-    setUser(userObject);
-    document.getElementById("signInDiv").hidden=true;
-
-    //slanje zahteva POST na server
-    fetch(
-      `https://localhost:44388/Korisnik/getKorisnikToken?email=${email}&ime=${ime}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        mode: "cors",
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        console.log("Response from server:", data);
-        var jwtToken = data["token"];
-        localStorage.setItem("token", jwtToken);
-        setTemp(true);
-        window.location.href = "/ulogovan-korisnik/profil";
-      })
-      .catch((error) => {
-        console.error("Error occurred:", error);
-      });
-  }
-
-  useEffect(() => {
-    /* global google */
-    google.accounts.id.initialize({
-      client_id:
-        "220695539326-hv8bcrgthi6ikj1sf0n1g2j2grbc4v9d.apps.googleusercontent.com",
-      callback: handleCallbackResponse,
-    });
-
-    google.accounts.id.renderButton(document.getElementById("signInDiv"), {
-      theme: "outline",
-      size: "large",
-    });
-
-    setTemp(false);
-
-    google.accounts.id.prompt();
-  }, []);
+  const [tip, setTip] = useState("Kupac");
+  const [requestCompleted, setRequestCompleted] = useState(false);
 
   return (
     <div className="App">
@@ -122,9 +70,8 @@ const App = () => {
         </Routes>
       </BrowserRouter>
       <p></p>
-      <div hidden id="signInDiv">
+      
 
-      </div>
     </div>
   );
 };

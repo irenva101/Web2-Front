@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageUploader from "../services/ArtikalService";
 import jwtDecode from "jwt-decode";
@@ -21,6 +21,8 @@ const Registracija = () => {
   const [tipKorisnika, setTipKorisnika] = useState(0);
   const [postarina, setPostarina] = useState(0);
 
+  const [user, setUser] = useState({});
+
   const [formData, setFormData] = useState({
     KorisnickoIme: "",
     Email: "",
@@ -34,6 +36,60 @@ const Registracija = () => {
     Verifikovan: false,
     Postarina: 0,
   });
+
+  function handleCallbackResponse(response){
+    var userObject = jwtDecode(response.credential);
+    var prezime = userObject.family_name;
+    var slikaKorisnika = userObject.picture;
+    var email = userObject.email;
+    var ime = userObject.given_name;
+
+    setUser(userObject);
+    document.getElementById("signInDiv").hidden = true;
+    var dropdown = document.getElementById("mojDropdown");
+    console.log(dropdown.value);
+      //slanje zahteva POST na server
+      fetch(
+        `https://localhost:44388/Korisnik/getKorisnikToken?email=${email}&ime=${ime}&prezime=${prezime}&slikaKorisnika=${slikaKorisnika}&tipKorisnika=${dropdown.value}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          mode: "cors",
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          console.log("Response from server:", data);
+          var jwtToken = data["token"];
+          localStorage.setItem("token", jwtToken);
+          //setTemp(true);
+          //setRequestCompleted((prevRequestCompleted) => true);
+          //console.log(requestCompleted);
+          window.location.href = "/ulogovan-korisnik/profil";
+        })
+        .catch((error) => {
+          console.error("Error occurred:", error);
+        });
+
+  }
+
+  useEffect(() => {
+      /* global google */
+      google.accounts.id.initialize({
+        client_id:
+        "220695539326-hv8bcrgthi6ikj1sf0n1g2j2grbc4v9d.apps.googleusercontent.com",
+        callback: handleCallbackResponse,
+      });
+  
+      google.accounts.id.renderButton(document.getElementById("signInDiv"), {
+        theme: "outline",
+        size: "large",
+      });
+    //google.accounts.id.prompt();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -310,7 +366,17 @@ const Registracija = () => {
       )}
 
       <div>
-        
+
+        <div>
+          <h1>Prijavite se preko google naloga</h1>
+          <select id="mojDropdown">
+            <option value="Kupac">Kupac</option>
+            <option value="Prodavac">Prodavac</option>
+          </select>
+        </div>
+        <div id="signInDiv"> 
+        </div>
+      
       </div>
     </div>
   );
