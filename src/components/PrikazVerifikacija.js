@@ -10,11 +10,11 @@ const PrikazVerifikacija=()=>{
 
     const statusProdavca=(tipKorisnika, verifikovan)=>{
         //logika za upis statusa u polje u tabeli
-        if(tipKorisnika===2){
+        if(tipKorisnika===2 && !verifikovan){
             return <p style={{color: "#E13232"}}>Odbijen</p>
-        }else if(tipKorisnika===1 && verifikovan===true){
+        }else if(tipKorisnika===1 && verifikovan){
             return <p style={{color: "#55E132"}}>Prihvacen</p>
-        }else{
+        }else if(tipKorisnika===1 && !verifikovan){
             return <p style={{color: "#F2A81B"}}>Procesira se</p>
         }
     }
@@ -36,7 +36,7 @@ const PrikazVerifikacija=()=>{
         })
         .then((response)=>response.json())
         .then((data)=>{
-            const prodavci=data.filter(korisnik=>korisnik.tipKorisnika ===1);
+            const prodavci=data.filter(korisnik=>korisnik.tipKorisnika ===1 || korisnik.tipKorisnika===2);
             setProdavce(prodavci);
             console.log(prodavci);
             setLoading(false);
