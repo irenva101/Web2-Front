@@ -43,16 +43,19 @@ const Profil = () => {
   const decodedToken = jwtDecode(token);
   console.log(decodedToken["Id"]);
   useEffect(() => {
-    fetch(`https://localhost:44388/Korisnik?idKorisnika=${decodedToken["Id"]}`, {
-      //zakucala jednog korisnika
-      method: "GET",
-      // body: JSON.stringify(formData), //ne mogu slati body u get zahtevu
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      mode: "cors",
-    })
+    fetch(
+      `https://localhost:44388/Korisnik?idKorisnika=${decodedToken["Id"]}`,
+      {
+        //zakucala jednog korisnika
+        method: "GET",
+        // body: JSON.stringify(formData), //ne mogu slati body u get zahtevu
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        mode: "cors",
+      }
+    )
       .then((Response) => Response.json())
       .then((data) => {
         //obrada odgovora servera
@@ -126,15 +129,18 @@ const Profil = () => {
       postarina: postarinaRef.current,
     };
 
-    fetch(`https://localhost:44388/Korisnik?idKorisnika=${decodedToken["Id"]}`, {
-      method: "PUT",
-      body: JSON.stringify(formDataToSend),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      mode: "cors",
-    })
+    fetch(
+      `https://localhost:44388/Korisnik?idKorisnika=${decodedToken["Id"]}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(formDataToSend),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        mode: "cors",
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         console.log("Podaci su uspešno poslati na server:", data);
@@ -148,143 +154,208 @@ const Profil = () => {
   };
 
   return (
-    <div>
-      <h2>Profil</h2>
-      {korisnikPodaci ? (
-        <form onSubmit={handleSubmit} ref={formRef}>
-          <label>
-            Korisnicko ime:
-            <input
-              type="text"
-              name="korisnickoIme"
-              value={formData.korisnickoIme}
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            E-mail:
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Lozinka:
-            <input
-              type="password"
-              name="lozinka"
-              value={formData.lozinka}
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Potvrda lozinke:
-            <input
-              type="password"
-              name="potvrdaLozinke"
-              value={passwordConfirmation}
-              onChange={handlePasswordConfirmationChange}
-            />
-            {passwordsMatch ? null : (
-              <p style={{ color: "red" }}>Šifre se ne podudaraju.</p>
-            )}
-            <p></p>
-          </label>
-          <label>
-            Ime:
-            <input
-              type="text"
-              name="ime"
-              value={formData.ime}
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Prezime:
-            <input
-              type="text"
-              name="prezime"
-              value={formData.prezime}
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Datum rodjenja:
-            <input
-              type="date"
-              name="datumRodjenja"
-              value={formData.datumRodjenja}
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Adresa:
-            <input
-              type="text"
-              name="adresa"
-              value={formData.adresa}
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Slika:
-            <ImageUploader onImageUpload={handleImageUpload} />
-            <p></p>
-          </label>
-          {formData.tipKorisnika === "Prodavac" && (
-            <div>
-              <label htmlFor="postarina">Postarina:</label>
-              <input
-                type="number"
-                id="postarina"
-                name="postarina"
-                value={formData.postarina}
-                onChange={handleChange}
-                required
-              />
-              <br />
-            </div>
-          )}
-          <button type="submit">Sacuvaj izmene</button>
-          {isSuccess && (
-            <p style={{ color: "green" }}>Podaci su uspešno ažurirani!</p>
-          )}
-        </form>
-      ) : (
-        <p>Ucitavanje podataka...</p>
-      )}
+    <div className="container mt-5">
+      <div className="row">
+        <div className="col-lg-6">
+          <h2 className="mb-4" style={{ color: "#279980" }}>
+            Profil
+          </h2>
+          {korisnikPodaci ? (
+            <form onSubmit={handleSubmit} ref={formRef} className="mt-4">
+              <div className="form-group">
+                <label>
+                  Korisnicko ime:
+                  <input
+                    type="text"
+                    name="korisnickoIme"
+                    value={formData.korisnickoIme}
+                    className="form-control"
+                    onChange={handleChange}
+                  />
+                  <p></p>
+                </label>
+              </div>
 
-      <div className="user-details">
-        <h3>Detalji korisnika</h3>
-        {korisnikPodaci && (
-          <div>
-            <p>Korisnicko ime: {korisnikPodaci.korisnickoIme}</p>
-            <p>Email: {korisnikPodaci.email}</p>
-            <p>Ime: {korisnikPodaci.ime}</p>
-            <p>Prezime: {korisnikPodaci.prezime}</p>
-            <p>Datum rodjenja: {korisnikPodaci.datumRodjenja}</p>
-            <p>Adresa: {korisnikPodaci.adresa}</p>
-            <p>
-              Slika:
-              <img
-                src={korisnikPodaci.slikaKorisnika}
-                alt="Uploaded"
-                style={{ maxWidth: "100px" }}
-              />
-            </p>
+              <div className="form-group">
+                <label>
+                  E-mail:
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                  <p></p>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>
+                  Lozinka:
+                  <input
+                    type="password"
+                    name="lozinka"
+                    value={formData.lozinka}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                  <p></p>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>
+                  Potvrda lozinke:
+                  <input
+                    type="password"
+                    name="potvrdaLozinke"
+                    value={passwordConfirmation}
+                    onChange={handlePasswordConfirmationChange}
+                    className="form-control"
+                  />
+                  {passwordsMatch ? null : (
+                    <p className="text-danger">Šifre se ne podudaraju.</p>
+                  )}
+                  <p></p>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>
+                  Ime:
+                  <input
+                    type="text"
+                    name="ime"
+                    value={formData.ime}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                  <p></p>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>
+                  Prezime:
+                  <input
+                    type="text"
+                    name="prezime"
+                    value={formData.prezime}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                  <p></p>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>
+                  Datum rodjenja:
+                  <input
+                    type="date"
+                    name="datumRodjenja"
+                    value={formData.datumRodjenja}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                  <p></p>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>
+                  Adresa:
+                  <input
+                    type="text"
+                    name="adresa"
+                    value={formData.adresa}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                  <p></p>
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>
+                  Slika:
+                  <ImageUploader
+                    onImageUpload={handleImageUpload}
+                    className="form-control"
+                  />
+                  <p></p>
+                </label>
+              </div>
+              {formData.tipKorisnika === "Prodavac" && (
+                <div>
+                  <div className="form-group">
+                    <label htmlFor="postarina">Postarina:</label>
+                    <input
+                      type="number"
+                      id="postarina"
+                      name="postarina"
+                      value={formData.postarina}
+                      onChange={handleChange}
+                      className="form-control"
+                      required
+                    />
+                  </div>
+                  <br />
+                </div>
+              )}
+              <button type="submit" className="btn btn-success">
+                Sacuvaj izmene
+              </button>
+              {isSuccess && (
+                <p className="text-success">Podaci su uspešno ažurirani!</p>
+              )}
+            </form>
+          ) : (
+            <p>Ucitavanje podataka...</p>
+          )}
+          <br />
+          <br />
+        </div>
+
+        <div className="col-lg-6">
+          <div className="user-details">
+            <h3 style={{ color: "#279980" }}>Detalji korisnika</h3>
+            {korisnikPodaci && (
+              <div className="user-info" style={{ border: "1px solid #88d498", padding: "15px", backgroundColor: "#e6f7ea" }}>
+                <p>
+                  <strong>Korisničko ime:</strong>{" "}
+                  {korisnikPodaci.korisnickoIme}
+                </p>
+                <p>
+                  <strong>Email:</strong> {korisnikPodaci.email}
+                </p>
+                <p>
+                  <strong>Ime:</strong> {korisnikPodaci.ime}
+                </p>
+                <p>
+                  <strong>Prezime:</strong> {korisnikPodaci.prezime}
+                </p>
+                <p>
+                  <strong>Datum rođenja:</strong> {korisnikPodaci.datumRodjenja}
+                </p>
+                <p>
+                  <strong>Adresa:</strong> {korisnikPodaci.adresa}
+                </p>
+                <p>
+                  <strong>Slika:                                  </strong>
+                  <img
+                    src={korisnikPodaci.slikaKorisnika}
+                    alt="Uploaded"
+                    style={{ maxWidth: "100px" }}
+                  />
+                </p>
+              </div>
+            )}
           </div>
-        )}
+          <Link to="/ulogovan-korisnik" className="mt-3">Nazad na početnu stranicu</Link>
+        </div>
       </div>
-      <Link to="/ulogovan-korisnik">Nazad na pocetnu stranicu</Link>
     </div>
   );
 };

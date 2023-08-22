@@ -1,6 +1,23 @@
 import { Link} from "react-router-dom";
 import React from "react";
 import jwtDecode from "jwt-decode";
+import "../../src/Pocetna.css";
+
+const centerContentStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: "100vh",
+  textAlign: "center",
+};
+
+const linkStyle = {
+  margin: "10px 0",
+  textDecoration: "none",
+  padding: "10px 20px",
+  borderRadius: "5px",
+};
 
 const UlogovanKorisnik = () => {
   const getUserRole = () => {
@@ -17,51 +34,103 @@ const UlogovanKorisnik = () => {
     }
     return null;
   };
-
+  
   var role = getUserRole();
   console.log(role);
+  
+  
+    const commonLinkStyle={ textDecoration: "none", fontSize: "18px", marginBottom: "10px" };
+  
 
   return (
-    <div>
-      <h1 style={{ color: "#279980" }}>Pocetna stranica</h1>
-      
-
+    <div style={centerContentStyle}>
+      <h1  className="page-title">Pocetna stranica</h1>
+  
       {(role === "Kupac" || role === "Prodavac" || role === "Admin") && (
+        <div className="link-section">
         <>
-          <Link to="/ulogovan-korisnik/profil">Profil</Link>
+          <Link to="/ulogovan-korisnik/profil" style={{ ...commonLinkStyle, color: "#007bff" }}>
+            Profil
+          </Link>
           <p></p>
         </>
+        </div>
       )}
       {role === "Kupac" && (
+         <div className="link-section">
         <>
-          <Link to="/ulogovan-korisnik/pregled-artikala">Nova porudzbina</Link>
+          <Link
+            to="/ulogovan-korisnik/pregled-artikala"
+            style={{ ...commonLinkStyle, color: "#007bff" }}
+          >
+            Nova porudzbina
+          </Link>
           <p></p>
-          <Link to="/ulogovan-korisnik/prethodne-porudzbine">
+          <Link
+            to="/ulogovan-korisnik/prethodne-porudzbine"
+            style={{ ...commonLinkStyle, color: "#007bff" }}
+          >
             Prethodne porudzbine
           </Link>
           <p></p>
         </>
+        </div>
       )}
-
+  
       {role === "Prodavac" && (
         <>
-          <Link to="/ulogovan-korisnik/dodaj-artikal">Dodaj artikal</Link>
+         <div className="link-section">
+          <Link
+            to="/ulogovan-korisnik/dodaj-artikal"
+            style={{ ...commonLinkStyle, color: "#007bff" }}
+          >
+            Dodaj artikal
+          </Link>
+          </div>
           <p></p>
-          <Link to="/ulogovan-korisnik/moje-porudzbine">Moje porudzbine</Link>
+          <div className="link-section">
+          <Link
+            to="/ulogovan-korisnik/moje-porudzbine"
+            style={{ ...commonLinkStyle, color: "#007bff" }}
+          >
+            Moje porudzbine
+          </Link>
+          </div>
           <p></p>
-          <Link to="/ulogovan-korisnik/nove-porudzbine">Nove porudzbine</Link>
+          <div className="link-section">
+          <Link
+            to="/ulogovan-korisnik/nove-porudzbine"
+            style={{ ...commonLinkStyle, color: "#007bff" }}
+          >
+            Nove porudzbine
+          </Link>
+          </div>
           <p></p>
         </>
       )}
-
+  
       {role === "Admin" && (
         <>
-          <Link to="/ulogovan-korisnik/verifikacija">Verifikacija</Link>
+         <div className="link-section">
+          <Link
+            to="/ulogovan-korisnik/verifikacija"
+            style={{ ...commonLinkStyle, color: "#007bff" }}
+            >
+            Verifikacija
+          </Link>
+            </div>
+            <div className="link-section">
           <p></p>
-          <Link to="/ulogovan-korisnik/sve-porudzbine">Sve porudzbine</Link>
+          <Link
+            to="/ulogovan-korisnik/sve-porudzbine"
+            style={{ ...commonLinkStyle, color: "#007bff" }}
+          >
+            Sve porudzbine
+          </Link>
+          </div>
         </>
+        
       )}
-      
     </div>
   );
 };

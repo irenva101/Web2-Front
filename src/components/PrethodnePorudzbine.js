@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
+import "../Artikli.css";
 
 const PrethodnePorudzbine = () => {
   const [porudzbine, setPorudzbine] = useState([]);
@@ -135,14 +136,11 @@ const PrethodnePorudzbine = () => {
   const otkaziPorudzbinu = (porudzbinaId) => {
     const existingPorudzbina = porudzbine.find(
       (item) => item.id === porudzbinaId
-      
     );
     console.log(porudzbine);
     console.log("JESMO LI DOBACILI DO OVDE");
-    console.log("PORUDZBINA--------"+porudzbinaId+"+++++++++++");
+    console.log("PORUDZBINA--------" + porudzbinaId + "+++++++++++");
     console.log(existingPorudzbina);
-    
-    
 
     // const vremeIsporuke=porudzbinaZaOtkazivanje["vremeIsporuke"];
     // const vremePorucivanja=porudzbinaZaOtkazivanje["vremePorucivanja"];
@@ -151,17 +149,14 @@ const PrethodnePorudzbine = () => {
 
     if (existingPorudzbina) {
       //otkazi porudzbinu
-      fetch(
-        `https://localhost:44388/Porudzbina/cancelPorudzbina`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(existingPorudzbina),
-          mode: "cors",
-        }
-      )
+      fetch(`https://localhost:44388/Porudzbina/cancelPorudzbina`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(existingPorudzbina),
+        mode: "cors",
+      })
         .then((responce) => responce.json())
         .then((data) => {
           alert("Uspesno je otkazana porudzbina");
@@ -193,43 +188,47 @@ const PrethodnePorudzbine = () => {
   }
 
   return (
-    <div>
-      <h1>Prethodne porudzbine</h1>
-      <input
-        type="text"
-        placeholder="Unesite naziv artikla za pretragu"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <select
-        value={sortOption}
-        onChange={(e) => setSortOption(e.target.value)}
-      >
-        <option value="naziv">Sortiraj po nazivu</option>
-        <option value="datum">Sortiraj po datumu</option>
-      </select>
-      <button
-        onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-      >
-        {sortOrder === "asc"
-          ? "Sortiraj po datumu (rastuce)"
-          : "Sortiraj po datumu (opadajuce)"}
-      </button>
-      <table>
+    <div className="prethodne-porudzbine">
+      <h1 className="page-title">Prethodne porudzbine</h1>
+      <div className="search-and-sort">
+        <input
+          type="text"
+          placeholder="Unesite naziv artikla za pretragu"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+        >
+          <option value="naziv">Sortiraj po nazivu</option>
+          <option value="datum">Sortiraj po datumu</option>
+        </select>
+        <button
+          className="sort-order-button"
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+        >
+          {sortOrder === "asc"
+            ? "Sortiraj po datumu (rastuce)"
+            : "Sortiraj po datumu (opadajuce)"}
+        </button>
+      </div>
+
+      <table className="artikli-table">
         <thead>
           <tr>
-            <th style={{ color: "#279980" }}>Adresa dostave</th>
-            <th style={{ color: "#279980" }}>Artikli</th>
-            <th style={{ color: "#279980" }}>Komentar</th>
-            <th style={{ color: "#279980" }}>Vreme isporuke</th>
-            <th style={{ color: "#279980" }}>Otkazati?</th>
+            <th className="table-header">Adresa dostave</th>
+            <th className="table-header">Artikli</th>
+            <th className="table-header">Komentar</th>
+            <th className="table-header">Vreme isporuke</th>
+            <th className="table-header">Otkazati?</th>
           </tr>
         </thead>
         <tbody>
           {sortedPorudzbine
             .filter((porudzbina) => !porudzbina.otkazana) //ne prikazuje otkazane porudzbine
             .map((porudzbina) => (
-              <tr key={porudzbina.vremeIsporuke}>
+              <tr key={porudzbina.vremeIsporuke} className="artikal-row">
                 <td>{porudzbina.adresaDostave}</td>
                 <td>
                   {porudzbina.artikli.map((artikal) => (
@@ -238,7 +237,7 @@ const PrethodnePorudzbine = () => {
                         src={artikal.slika}
                         alt={artikal.naziv}
                         className="artikal-slika"
-                        style={{ width: "100px" }}
+                        
                       />
                       <p className="artikal-naziv">{artikal.naziv}</p>
                       <p className="artikal-cijena">Cena: {artikal.cena}</p>
@@ -246,19 +245,20 @@ const PrethodnePorudzbine = () => {
                     </div>
                   ))}
                 </td>
-                <td>{porudzbina.komentar}</td>
-                <td>
+                <td className="otkazi-column">{porudzbina.komentar}</td>
+                <td className="otkazi-column">
                   {/* Prikaz preostalog vremena */}
                   {preostaloVreme[porudzbina.id] > 0
                     ? formatRemainingTime(preostaloVreme[porudzbina.id])
                     : "Isporuceno"}
                 </td>
-                <td>
+                <td className="otkazi-column">
                   {!porudzbina.otkazana &&
                     !otkazivanjeUPrvihSatVremena(porudzbina.id) &&
                     preostaloVreme[porudzbina.id] > 0 && (
                       <button
                         type="button"
+                        className="poruci-button"
                         onClick={() => {
                           otkaziPorudzbinu(porudzbina.id);
                         }}

@@ -48,8 +48,6 @@ const Logovanje = () => {
   function handleCallbackResponse(response) {
     var userObject = jwtDecode(response.credential);
     var prezime = userObject.family_name;
-    var slikaKorisnika = userObject.picture;
-    var email = userObject.email;
     var ime = userObject.given_name;
 
     setUser(userObject);
@@ -102,9 +100,10 @@ const Logovanje = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Logovanje</h1>
+    <div className="container text-center mt-5">
+      <h1 style={{ color: "#007bff" }}>Logovanje</h1>
       <form onSubmit={handleSubmit}>
+      <div className="form-group">
         <label htmlFor="text">Username:</label>
         <input
           type="username"
@@ -112,10 +111,13 @@ const Logovanje = () => {
           name="Username"
           value={formData.Username}
           onChange={handleChange}
+          className="form-control"
           required
         />
         <br />
+        </div>
 
+        <div className="form-group">
         <label htmlFor="lozinka">Lozinka:</label>
         <input
           type="password"
@@ -123,17 +125,23 @@ const Logovanje = () => {
           name="Lozinka"
           value={formData.Lozinka}
           onChange={handleChange}
+          className="form-control"
           required
         />
         <br />
+        </div>
 
-        <button type="submit">Uloguj se</button>
+        <button type="submit" className="btn btn-primary mt-3">Uloguj se</button>
       </form>
       {isLoginFailed && (
-        <p>Neuspesno logovanje. Proverite vase podatke i pokusajte ponovo.</p>
+        <p className="text-danger mt-3">Neuspesno logovanje. Proverite vase podatke i pokusajte ponovo.</p>
       )}
-
-      <div id="signInDiv"></div>
+      <div className="d-flex justify-content-center align-items-center mt-3">
+      <div id="signInDiv"> 
+        </div>
+      </div>
+      
+      
     </div>
   );
 };

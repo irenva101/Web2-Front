@@ -13,14 +13,14 @@ import NovePorudzbine from "./components/NovePorudzbine";
 import Verifikacija from "./components/Verifikacija";
 import PrikazVerifikacija from "./components/PrikazVerifikacija";
 import SvePorudzbine from "./components/SvePorudzbine";
-import { useEffect, useState } from "react";
-import jwtDecode from "jwt-decode";
+
+
 
 const App = () => {
-  const [user, setUser] = useState({});
-  const [temp, setTemp] = useState(false);
-  const [tip, setTip] = useState("Kupac");
-  const [requestCompleted, setRequestCompleted] = useState(false);
+  
+  
+  
+  
 
   return (
     <div className="App">

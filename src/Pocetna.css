@@ -1,0 +1,37 @@
+/* Pocetna.css */
+
+/* Stilizacija za zajedničke linkove */
+.common-link {
+    text-decoration: none;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #007bff;
+    transition: color 0.3s;
+  }
+  
+  .common-link:hover {
+    color: #0056b3;
+  }
+  
+  /* Stilizacija za glavni naslov */
+  .page-title {
+    color: #279980;
+    margin-top: 50px;
+  }
+  
+  /* Stilizacija za odvojene sekcije linkova */
+  .link-section {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .link-section p {
+    margin: 10px 0;
+  }
+  
+  .link-section:last-child {
+    margin-bottom: 0;
+  }

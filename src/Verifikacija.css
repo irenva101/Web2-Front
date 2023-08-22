@@ -1,0 +1,73 @@
+/* Verifikacija.css */
+
+/* Stilizacija za naslov stranice */
+h1 {
+    color: #279980;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  /* Stilizacija za tabelu */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  th,
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  th {
+    font-weight: bold;
+    background-color: #f5f5f5;
+    text-align: left;
+  }
+  
+  td img {
+    max-width: 100px;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* Stilizacija za dugmad */
+  button {
+    background-color: #279980;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #1b7b6f;
+  }
+  
+  /* Stilizacija za poruke */
+  p {
+    margin: 10px 0;
+    color: #777;
+  }
+  
+  /* Stilizacija za dodatni sadržaj ispod tabele */
+  #prikaz-verifikacija {
+    margin-top: 20px;
+  }
+  .red-button {
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .red-button:hover {
+    background-color: #c9302c;
+  }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PrikazVerifikacija from "./PrikazVerifikacija";
 import jwtDecode from "jwt-decode";
+import "../../src/Verifikacija.css";
 
 const Verifikacija = () => {
   const [prodavac, setProdavce] = useState([]);
@@ -211,6 +212,7 @@ const Verifikacija = () => {
                 </td>
                 <td>
                   <button
+                  className="red-button"
                     onClick={() =>
                       handleOdbijVerifikaciju(prodavac.id, prodavac.email)
                     }

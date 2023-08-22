@@ -4,13 +4,13 @@ import {Link} from 'react-router-dom';
 
 function PocetnaStranica(){
     return (
-        <div>
-            <h1>Dobrodosli u online prodavnicu</h1>
-            <Link to="/registracija">Registracija</Link>
+        <div className="container text-center mt-5">
+            <h1 className="mb-4" style={{ color: "#28a745" }}>Dobrodosli u online prodavnicu</h1>
+            <Link to="/registracija" className="btn btn-success mr-3">Registracija</Link>
             <p></p>
-            <Link to="/logovanje">Login</Link>
+            <Link to="/logovanje" className="btn btn-primary">Login</Link>
         </div>
-    )
+    );
 }
 
 export default PocetnaStranica;

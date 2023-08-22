@@ -3,7 +3,7 @@ import DetaljiArtikla from "./DetaljiArtikla";
 import chartSlika from "../images/chart.png";
 import Korpa from "./Korpa";
 import jwtDecode from "jwt-decode";
-import { format } from "date-fns";
+import "../../src/Artikli.css";
 
 const PregledArtikala = () => {
   const [artikli, setArtikli] = useState([]);
@@ -17,16 +17,15 @@ const PregledArtikala = () => {
   const [kolicina, setKolicina] = useState("");
 
   const formatiranoVremeIsporuke = (vremePorucivanja) => {
-    console.log("VREME PORUCIVANJA: "+vremePorucivanja);
-    if(vremePorucivanja){
+    console.log("VREME PORUCIVANJA: " + vremePorucivanja);
+    if (vremePorucivanja) {
       const minutiZaDodati = Math.floor(Math.random() * 100) + 60;
       //console.log("Minuti za dodati: "+minutiZaDodati);
       const novoVreme = new Date(vremePorucivanja);
       novoVreme.setMinutes(vremePorucivanja.getMinutes() + minutiZaDodati);
-      console.log("VREME ISPORUKE: "+ novoVreme);
+      console.log("VREME ISPORUKE: " + novoVreme);
       return novoVreme;
-      
-    }else{
+    } else {
       return alert("VREME PORUCIVANJA NULL");
     }
   };
@@ -42,9 +41,9 @@ const PregledArtikala = () => {
   //const [vremePorucivanja, setVremePorucivanja] = useState(new Date());
   //console.log(vremePorucivanja);
 
-  const posaljiPorudzbinuNaServer=()=>{
+  const posaljiPorudzbinuNaServer = () => {
     // Prvo kreiramo objekat koji sadrži sve potrebne informacije za porudžbinu
-    
+
     console.log("Cart items: " + JSON.stringify(cartItems));
     const newSelectedArtikliIds = [];
     cartItems.forEach((item) => {
@@ -86,12 +85,12 @@ const PregledArtikala = () => {
       return; // Ovde možete izvršiti odgovarajuće akcije ukoliko format nije ispravan.
     }
 
-    const vremePorucivanja=new Date();
+    const vremePorucivanja = new Date();
     const vremeIsporuke = formatiranoVremeIsporuke(vremePorucivanja);
 
-    console.log("-----------------VREME PORUCIVANJA: "+ vremePorucivanja);
-    console.log("-----------------VREME ISPORUKE :"+ vremeIsporuke);
-    
+    console.log("-----------------VREME PORUCIVANJA: " + vremePorucivanja);
+    console.log("-----------------VREME ISPORUKE :" + vremeIsporuke);
+
     const porudzbina = {
       artikli: zaSlanje,
       ukupanIznos: ukupanIznos,
@@ -351,60 +350,68 @@ const PregledArtikala = () => {
 
     return ukupnaPostarina;
   }
+  const [hoveredArtikal, setHoveredArtikal] = useState(null);
 
   return (
     <div>
-      <div style={{ position: "absolute", top: "20px", right: "20px" }}>
-        <img
-          src={chartSlika}
-          alt="Korpa"
-          style={{ width: "40px", height: "40px" }}
-        />
-        <span>{korpa}</span>
+      <div className="cart-icon">
+        <img src={chartSlika} alt="Korpa" className="cart-icon-image" />
+        <span className="cart-count">{korpa}</span>
       </div>
 
-      <h1 style={{ color: "#279980" }}>Dostupni artikli</h1>
-      <input
-        type="text"
-        placeholder="Unesite naziv artikla za pretragu"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <select
-        value={sortOption}
-        onChange={(e) => setSortOption(e.target.value)}
-      >
-        <option value="naziv">Sortiraj po nazivu</option>
-        <option value="cena">Sortiraj po ceni</option>
-      </select>
-      <button
-        onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-      >
-        {sortOrder === "asc"
-          ? "Sortiraj po ceni (rastuce)"
-          : "Sortiraj po ceni (opadajuce)"}
-      </button>
-      <table>
+      <h1 className="page-title">Dostupni artikli</h1>
+      <div className="search-and-sort">
+        <input
+          type="text"
+          placeholder="Unesite naziv artikla za pretragu"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+        >
+          <option value="naziv">Sortiraj po nazivu</option>
+          <option value="cena">Sortiraj po ceni</option>
+        </select>
+        <button
+          className="sort-order-button"
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+        >
+          {sortOrder === "asc"
+            ? "Sortiraj po ceni (rastuce)"
+            : "Sortiraj po ceni (opadajuce)"}
+        </button>
+      </div>
+
+      <table className="artikli-table">
         <thead>
           <tr>
-            <th style={{ color: "#279980" }}>Naziv</th>
-            <th style={{ color: "#279980" }}>Slika</th>
-            <th style={{ color: "#279980" }}>Količina</th>
-            <th style={{ color: "#279980" }}>Cena</th>
+            <th className="table-header">Naziv</th>
+            <th className="table-header">Slika</th>
+            <th className="table-header">Količina</th>
+            <th className="table-header">Cena</th>
           </tr>
         </thead>
         <tbody>
           {sortedArtikli.map((artikal) => (
-            <tr key={artikal.id}>
+            <tr
+              key={artikal.id}
+              className={`artikal-row ${
+                hoveredArtikal === artikal.id ? "hovered" : ""
+              }`}
+              onMouseEnter={() => setHoveredArtikal(artikal.id)}
+              onMouseLeave={() => setHoveredArtikal(null)}
+            >
               <td>{artikal.naziv}</td>
               <td>
                 <img
                   src={artikal.slikaArtikla}
                   alt={artikal.naziv}
-                  style={{ width: "100px" }}
+                  className="artikal-image"
                 />
               </td>
-              <td style={{ color: artikal.kolicina > 0 ? "green" : "red" }}>
+              <td className={`kolicina-cell ${artikal.kolicina > 0 ? "in-stock" : "out-of-stock"}`}>
                 {artikal.kolicina > 0 ? "Na stanju" : "Nema na stanju"}
               </td>
               <td>
@@ -416,6 +423,7 @@ const PregledArtikala = () => {
               <td>
                 <button
                   type="button"
+                  className="detalji-button"
                   onClick={() => {
                     setSelectedArtikal(artikal);
                   }}
@@ -433,65 +441,77 @@ const PregledArtikala = () => {
         </tbody>
       </table>
       {selectedArtikal && <DetaljiArtikla artikal={selectedArtikal} />}
-      <Korpa cartItems={cartItems} obrisiIzKorpe={obrisiIzKorpe} />
+      <div className="cart-and-order">
+        <Korpa cartItems={cartItems} obrisiIzKorpe={obrisiIzKorpe} />
 
-      <div>
-        {/* ...ostatak JSX koda... */}
-        <div style={{ marginTop: "20px" }}>
-          <h2 style={{ color: "#279980" }}>Iznos bez troskova dostave:</h2>{" "}
-          <h2>
-            {ukupanIznos.toLocaleString("sr-RS", {
-              style: "currency",
-              currency: "RSD",
-            })}
-          </h2>
-          {cartItems.length > 0 && (
-            <button onClick={() => setShowPregledPorudzbine(true)}>
-              Pregled porudzbine
-            </button>
+        <div className="order-summary">
+          {/* ...ostatak JSX koda... */}
+          <div className="order-summary-section">
+            <h2 className="order-summary-title">Iznos bez troskova dostave:</h2>{" "}
+            <h2 className="order-summary-amount">
+              {ukupanIznos.toLocaleString("sr-RS", {
+                style: "currency",
+                currency: "RSD",
+              })}
+            </h2>
+            {cartItems.length > 0 && (
+              <button
+                className="pregled-porudzbine-button"
+                onClick={() => setShowPregledPorudzbine(true)}
+              >
+                Pregled porudzbine
+              </button>
+            )}
+          </div>
+          {showPregledPorudzbine && cartItems.length > 0 && (
+            <div className="order-details">
+              <h2>Artikli u korpi:</h2>
+              <ul className="order-details-list">
+                {cartItems.map((item, index) => (
+                  <li key={index}>
+                    {item.artikal.naziv} (Količina: {item.kolicina})
+                  </li>
+                ))}
+              </ul>
+
+              <div className="order-details-inputs">
+                <label htmlFor="adresa">Adresa:</label>
+                <input
+                  id="adresa"
+                  value={adresa}
+                  onChange={(e) => setAdresa(e.target.value)}
+                />
+              </div>
+              <div className="order-details-inputs">
+                <label htmlFor="komentar">Komentar:</label>
+                <textarea
+                  id="komentar"
+                  value={komentar}
+                  onChange={(e) => setKomentar(e.target.value)}
+                />
+                <br />
+                <h2 style={{ color: "#279980" }}>
+                  Ukupan iznos(sa postarinom):
+                </h2>
+                <h2>
+                  {(ukupanIznos + ukupnaPostarina(cartItems)).toLocaleString(
+                    "sr-RS",
+                    {
+                      style: "currency",
+                      currency: "RSD",
+                    }
+                  )}
+                </h2>
+              </div>
+              <button
+                className="poruci-button"
+                onClick={() => posaljiPorudzbinuNaServer()}
+              >
+                Poruči
+              </button>
+            </div>
           )}
         </div>
-        {showPregledPorudzbine && cartItems.length > 0 && (
-          <div>
-            <h2>Artikli u korpi:</h2>
-            <ul>
-              {cartItems.map((item, index) => (
-                <li key={index}>
-                  {item.artikal.naziv} (Količina: {item.kolicina})
-                </li>
-              ))}
-            </ul>
-
-            <div>
-              <label htmlFor="adresa">Adresa:</label>
-              <input
-                id="adresa"
-                value={adresa}
-                onChange={(e) => setAdresa(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="komentar">Komentar:</label>
-              <textarea
-                id="komentar"
-                value={komentar}
-                onChange={(e) => setKomentar(e.target.value)}
-              />
-              <br />
-              <h2 style={{ color: "#279980" }}>Ukupan iznos(sa postarinom):</h2>
-              <h2>
-                {(ukupanIznos + ukupnaPostarina(cartItems)).toLocaleString(
-                  "sr-RS",
-                  {
-                    style: "currency",
-                    currency: "RSD",
-                  }
-                )}
-              </h2>
-            </div>
-            <button onClick={() => posaljiPorudzbinuNaServer()}>Poruči</button>
-          </div>
-        )}
       </div>
     </div>
   );

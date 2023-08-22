@@ -238,9 +238,10 @@ const Registracija = () => {
   };
 
   return (
-    <div>
-      <h1>Registracija</h1>
+    <div className="container text-center mt-5">
+      <h1 style={{ color: "#28a745" }}>Registracija</h1>
       <form onSubmit={handleSubmit}>
+      <div className="form-group">
         <label htmlFor="korisnickoIme">Korisničko ime:</label>
         <input
           type="text"
@@ -248,10 +249,13 @@ const Registracija = () => {
           name="KorisnickoIme"
           value={formData.KorisnickoIme}
           onChange={handleChange}
+          className="form-control"
           required
         />
         <br />
+        </div>
 
+        <div className="form-group">
         <label htmlFor="email">E-mail adresa:</label>
         <input
           type="email"
@@ -259,10 +263,13 @@ const Registracija = () => {
           name="Email"
           value={formData.Email}
           onChange={handleEmailChange}
+          className="form-control"
           required
         />
         <br />
+        </div>
 
+        <div className="form-group">
         <label htmlFor="lozinka">Lozinka:</label>
         <input
           type="password"
@@ -270,10 +277,13 @@ const Registracija = () => {
           name="Lozinka"
           value={formData.Lozinka}
           onChange={handleChange}
+          className="form-control"
           required
         />
         <br />
+        </div>
 
+        <div className="form-group">
         <label htmlFor="potvrdaLozinke">Potvrdi lozinku:</label>
         <input
           type="password"
@@ -281,14 +291,17 @@ const Registracija = () => {
           name="PotvrdaLozinke"
           value={passwordConfirmation}
           onChange={handlePasswordConfirmationChange}
+          className="form-control"
           required
         />
         <br />
+        </div>
 
         {!isPasswordMatch && (
           <div style={{ color: "red" }}>Lozinke se ne podudaraju.</div>
         )}
 
+        <div className="form-group">
         <label htmlFor="ime">Ime:</label>
         <input
           type="text"
@@ -296,10 +309,13 @@ const Registracija = () => {
           name="Ime"
           value={formData.Ime}
           onChange={handleChange}
+          className="form-control"
           required
         />
         <br />
+        </div>
 
+        <div className="form-group">
         <label htmlFor="prezime">Prezime:</label>
         <input
           type="text"
@@ -307,14 +323,19 @@ const Registracija = () => {
           name="Prezime"
           value={formData.Prezime}
           onChange={handleChange}
+          className="form-control"
           required
         />
         <br />
+        </div>
 
+        <div className="form-group">
         <label htmlFor="datumRodjenja">Datum rođenja:</label>
-        <input type="date" value={selectDate} onChange={handleDateChange} />
+        <input type="date" value={selectDate} onChange={handleDateChange} className="form-control" />
         <br />
+        </div>
 
+        <div className="form-group">
         <label htmlFor="adresa">Adresa:</label>
         <input
           type="text"
@@ -322,25 +343,31 @@ const Registracija = () => {
           name="Adresa"
           value={formData.Adresa}
           onChange={handleChange}
+          className="form-control"
           required
         />
         <br />
+        </div>
 
+        <div className="form-group">
         <label htmlFor="TipKorisnika">Tip korisnika:</label>
         <select
           id="tipKorisnika"
           name="TipKorisnika"
           value={formData.TipKorisnika}
           onChange={handleTipChange}
+          className="form-control"
           required
         >
           <option value="Kupac">Kupac</option>
           <option value="Prodavac">Prodavac</option>
         </select>
         <br />
+        </div>
 
         {formData.TipKorisnika === "Prodavac" && (
           <div>
+            <div className="form-group">
             <label htmlFor="postarina">Postarina:</label>
             <input
               type="number"
@@ -348,33 +375,44 @@ const Registracija = () => {
               name="Postarina"
               value={formData.Postarina}
               onChange={handlePostarinaChange}
+              className="form-control"
               required
             />
             <br />
+            </div>
           </div>
         )}
-
+        <div className="form-group">
         <label htmlFor="slika">Slika profila:</label>
-        <ImageUploader onImageUpload={handleImageUpload} />
-        <br />
+        <ImageUploader onImageUpload={handleImageUpload} className="form-control mr-2" />
+        
+        
+        </div>
 
-        <button type="submit">Registruj se</button>
+
+
+
+
+        <button type="submit" className="btn btn-success mt-3">Registruj se</button>
       </form>
 
       {showNotification && (
-        <div className="notification">{notificationMessage}</div>
+        <div className="notification" style={{ background: "#d4edda", color: "#155724" }}>{notificationMessage}</div>
       )}
-
+      <br/>
+      
       <div>
 
-        <div>
-          <h1>Prijavite se preko google naloga</h1>
+        <div className="mt-4">
+          <h1 style={{ color: "#28a745" }}>Prijavite se preko google naloga</h1>
           <select id="mojDropdown">
             <option value="Kupac">Kupac</option>
             <option value="Prodavac">Prodavac</option>
           </select>
         </div>
+        <div className="d-flex justify-content-center align-items-center mt-3">
         <div id="signInDiv"> 
+        </div>
         </div>
       
       </div>

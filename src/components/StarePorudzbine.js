@@ -54,6 +54,7 @@ const StarePorudzbine = () => {
         setPorudzbine(data);
       })
       .catch((error) => {
+        console.log(decodedToken["Id"]);
         console.error(
           "Greška prilikom dobavljanja podataka sa servera:",
           error
@@ -113,7 +114,9 @@ const StarePorudzbine = () => {
           </tr>
         </thead>
         <tbody>
-          {porudzbine.map((porudzbina, index) => (
+          {porudzbine
+          .filter((porudzbina)=> !porudzbina.otkazana)
+          .map((porudzbina, index) => (
             <tr key={index}>
               <td>{porudzbina.adresaDostave}</td>
               <td>{porudzbina.komentar}</td>

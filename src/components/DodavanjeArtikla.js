@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import ImageUploader from "../services/ArtikalService";
 import { json } from "react-router-dom";
+import "../../src/Artikli.css";
+import jwtDecode from "jwt-decode";
 
 const DodavanjeArtikla = () => {
   const formRef = useRef(null);
@@ -30,9 +32,8 @@ const DodavanjeArtikla = () => {
       cena: formRef.current.cena.value,
       kolicina: formRef.current.kolicina.value,
       opis: formRef.current.opis.value,
-      slika: slikaArtikla
+      slika: slikaArtikla,
     };
-
 
     fetch(`https://localhost:44388/Artikal?idArtikla=${formDataToUpdate.id}`, {
       method: "PATCH",
@@ -129,18 +130,25 @@ const DodavanjeArtikla = () => {
   };
 
   useEffect(() => {
-    fetch("https://localhost:44388/Artikal", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      mode: "cors",
-    })
-      // getAllArtikle()
+    var token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken["Id"]);
+
+    fetch(
+      `https://localhost:44388/Artikal/idKorisnika?idKorisnika=${decodedToken["Id"]}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        mode: "cors",
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         setArtikli(data);
-        console.log(data);
+        console.log(JSON.stringify(data));
       })
       .catch((error) => {
         console.error("Greška prilikom dohvatanja artikala:", error);
@@ -149,8 +157,8 @@ const DodavanjeArtikla = () => {
   }, []);
 
   const handleSubmit = (e) => {
-
     var token = localStorage.getItem("token");
+
     if (!token) {
       console.error("Token nije prisutan u localStorage-u.");
       return; // Ovde možete izvršiti odgovarajuće akcije ukoliko token nije prisutan.
@@ -194,65 +202,83 @@ const DodavanjeArtikla = () => {
   };
 
   return (
-    <div>
-      <h1>Dodavanje artikla</h1>
+    <div className="dodavanje-artikla-container">
+      <h1 className="page-title">Dodavanje artikla</h1>
       {showUpdateForm ? (
-        <form onSubmit={handleUpdate} ref={formRef}>
-          <label hidden>
-            ProdavacId:
-            <input
-              type="number"
-              name="prodavacId"
-              value={formData.prodavacId}
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Naziv:
-            <input
-              type="text"
-              name="naziv"
-              value={formData.naziv} // Dodali smo vrednost iz formData za polje "naziv"
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Cena:
-            <input
-              type="number"
-              name="cena"
-              value={formData.cena} // Dodali smo vrednost iz formData za polje "cena"
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Kolicina:
-            <input
-              type="number"
-              name="kolicina"
-              value={formData.kolicina} // Dodali smo vrednost iz formData za polje "kolicina"
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          <label>
-            Opis:
-            <input
-              type="text"
-              name="opis"
-              value={formData.opis} // Dodali smo vrednost iz formData za polje "opis"
-              onChange={handleChange}
-            />
-            <p></p>
-          </label>
-          
-          <label htmlFor="slika">Slika:</label>
-          <ImageUploader onImageUpload={handleImageUpload} />
+        <form onSubmit={handleUpdate} ref={formRef} className="artikal-form">
+          <div className="form-row">
+            <label hidden>
+              ProdavacId:
+              <input
+                type="number"
+                name="prodavacId"
+                value={formData.prodavacId}
+                onChange={handleChange}
+              />
+              <p></p>
+            </label>
+          </div>
 
-          <button type="submit">Sačuvaj ažuriranje</button>
+          <div className="form-row">
+            <label>
+              Naziv:
+              <input
+                type="text"
+                name="naziv"
+                value={formData.naziv} // Dodali smo vrednost iz formData za polje "naziv"
+                onChange={handleChange}
+              />
+              <p></p>
+            </label>
+          </div>
+
+          <div className="form-row">
+            <label>
+              Cena:
+              <input
+                type="number"
+                name="cena"
+                value={formData.cena} // Dodali smo vrednost iz formData za polje "cena"
+                onChange={handleChange}
+              />
+              <p></p>
+            </label>
+          </div>
+
+          <div className="form-row">
+            <label>
+              Kolicina:
+              <input
+                type="number"
+                name="kolicina"
+                value={formData.kolicina} // Dodali smo vrednost iz formData za polje "kolicina"
+                onChange={handleChange}
+              />
+              <p></p>
+            </label>
+          </div>
+
+          <div className="form-row">
+            <label>
+              Opis:
+              <input
+                type="text"
+                name="opis"
+                value={formData.opis} // Dodali smo vrednost iz formData za polje "opis"
+                onChange={handleChange}
+              />
+              <p></p>
+            </label>
+          </div>
+
+          <div className="form-row">
+            <label htmlFor="slika">Slika:</label>
+            <ImageUploader onImageUpload={handleImageUpload} />
+          </div>
+
+          <button type="submit" className="submit-button">
+            Sačuvaj ažuriranje
+          </button>
         </form>
       ) : (
         <form onSubmit={handleSubmit} ref={formRef}>
@@ -292,18 +318,18 @@ const DodavanjeArtikla = () => {
         </form>
       )}
 
-      <div>
-        <h1>Prikaz svih artikala</h1>
-        <table>
+      <div className="prikaz-artikala-container">
+        <h1 className="page-title">Prikaz svih artikala</h1>
+        <table className="artikli-table">
           <tr>
-            <th style={{ color: "#279980" }}>Naziv</th>
-            <th style={{ color: "#279980" }}>Cena</th>
-            <th style={{ color: "#279980" }}>Kolicina</th>
-            <th style={{ color: "#279980" }}>Opis</th>
-            <th style={{ color: "#279980" }}>Slika</th>
+            <th className="table-header">Naziv</th>
+            <th className="table-header">Cena</th>
+            <th className="table-header">Kolicina</th>
+            <th className="table-header">Opis</th>
+            <th className="table-header">Slika</th>
           </tr>
           {artikli.map((artikal) => (
-            <tr key={artikal.id}>
+            <tr key={artikal.id} className="artikal-row">
               <td>{artikal.naziv}</td>
               <td>
                 {artikal.cena.toLocaleString("sr-RS", {
@@ -314,11 +340,16 @@ const DodavanjeArtikla = () => {
               <td>{artikal.kolicina}</td>
               <td>{artikal.opis}</td>
               <td>
-                <img src={artikal.slikaArtikla} alt="Uploaded" style={{maxWidth: '100px'}}/>
+                <img
+                  src={artikal.slika}
+                  alt="Uploaded"
+                  className="artikal-image"
+                />
               </td>
               <td>
                 <button
                   type="button"
+                  className="detalji-button"
                   onClick={() => {
                     azurirajArtikal(artikal);
                   }}
@@ -327,7 +358,11 @@ const DodavanjeArtikla = () => {
                 </button>
               </td>
               <td>
-                <button type="button" onClick={() => obrisiArtikal(artikal)}>
+                <button
+                  type="button"
+                  className="detalji-button obrisi-button"
+                  onClick={() => obrisiArtikal(artikal)}
+                >
                   Obrisi
                 </button>
               </td>
