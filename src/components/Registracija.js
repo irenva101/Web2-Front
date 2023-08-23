@@ -65,9 +65,7 @@ const Registracija = () => {
           console.log("Response from server:", data);
           var jwtToken = data["token"];
           localStorage.setItem("token", jwtToken);
-          //setTemp(true);
-          //setRequestCompleted((prevRequestCompleted) => true);
-          //console.log(requestCompleted);
+          
           window.location.href = "/ulogovan-korisnik/profil";
         })
         .catch((error) => {
@@ -131,8 +129,14 @@ const Registracija = () => {
         TipKorisnika: temp,
       })
     );
-    //const firstFetchPromise = new Promise((resolve, reject) => {
-    //setTimeout(() => {
+    
+    const prodavac = {
+      KorisnikId: "Registracija(WEB2)",
+      Body:
+        "Postovani, uskoro cete primiti jos jedan mejl da Vas obavestimo o verifikaciji vaseg naloga.",
+    };
+
+
     fetch("https://localhost:44388/Korisnik", {
       method: "POST",
       body: JSON.stringify({
@@ -152,7 +156,34 @@ const Registracija = () => {
         console.log(
           "Sta je bek vratio nakon kreiranja korisnika: " + JSON.stringify(data)
         );
-        //resolve(data); // RESOLVE NAKON STO SE ZAVRSI
+        var reply=data;
+        console.log(reply.id);
+        if(formData.TipKorisnika === "Prodavac"){
+
+          const prodavac = {
+            korisnikId: reply.id,
+            postarina: reply.postarina,
+            verifikovan: reply.verifikovan,
+            artikli: []
+          };
+
+          fetch("https://localhost:44388/Prodavac", {
+            method: "POST",
+            body: JSON.stringify(prodavac),
+            headers: {
+              "Content-Type": "application/json",
+            },
+            mode: "cors",
+          })
+          .then((Response)=>Response.json())
+          .then((data)=>{
+            console.log("ODgovor beka na post Prodavac:");
+            console.log(JSON.stringify(data));
+          })
+          .catch((error)=>{
+            console.log("Greska prilikom createProdavca greska: "+ error);
+          })
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -174,7 +205,7 @@ const Registracija = () => {
       };
       console.log(JSON.stringify(emailData));
 
-      //await firstFetchPromise;
+      
       fetch(
         //pre fetch ide await
         "https://localhost:44388/Email/emailService",
@@ -190,6 +221,7 @@ const Registracija = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log("POGODILI BEK.");
+          
         })
         .catch((error) => {
           console.log(error);

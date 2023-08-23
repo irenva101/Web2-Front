@@ -34,9 +34,16 @@ const UlogovanKorisnik = () => {
     }
     return null;
   };
+  const getUserVerification=()=>{
+    var token = localStorage.getItem("token");
+    const decodedToken=jwtDecode(token);
+    return decodedToken["Verifikovan"];
+  }
   
   var role = getUserRole();
+  var verification=getUserVerification();
   console.log(role);
+  console.log(verification);
   
   
     const commonLinkStyle={ textDecoration: "none", fontSize: "18px", marginBottom: "10px" };
@@ -57,15 +64,18 @@ const UlogovanKorisnik = () => {
         </div>
       )}
       {role === "Kupac" && (
-         <div className="link-section">
         <>
+         <div className="link-section">
           <Link
             to="/ulogovan-korisnik/pregled-artikala"
             style={{ ...commonLinkStyle, color: "#007bff" }}
-          >
+            >
             Nova porudzbina
           </Link>
           <p></p>
+            </div>
+          
+            <div className="link-section">
           <Link
             to="/ulogovan-korisnik/prethodne-porudzbine"
             style={{ ...commonLinkStyle, color: "#007bff" }}
@@ -73,11 +83,11 @@ const UlogovanKorisnik = () => {
             Prethodne porudzbine
           </Link>
           <p></p>
-        </>
         </div>
+        </>
       )}
   
-      {role === "Prodavac" && (
+      {role === "Prodavac" &&  verification==="True" &&(
         <>
          <div className="link-section">
           <Link

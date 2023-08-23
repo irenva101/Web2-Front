@@ -12,6 +12,7 @@ const DodavanjeArtikla = () => {
   const [slikaArtikla, setSlikaArtikla] = useState("");
   const [UploadedImage, setUploadedImage] = useState(null);
 
+
   const azurirajArtikal = (artikal) => {
     setTrenutniArtikal(artikal);
     setShowUpdateForm(true);
@@ -64,6 +65,7 @@ const DodavanjeArtikla = () => {
   };
 
   useEffect(() => {
+    
     if (trenutniArtikal) {
       setFormData({
         prodavacId: trenutniArtikal.prodavacId,
@@ -173,9 +175,11 @@ const DodavanjeArtikla = () => {
     }
 
     e.preventDefault();
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken["Id"]);
     //dalje ide lgika za slanje
     const formDataToSend = {
-      prodavacId: formRef.current.prodavacId.value,
+      prodavacId: decodedToken["Id"],//zapravo salje IdKorisnika
       naziv: formRef.current.naziv.value,
       cena: formRef.current.cena.value,
       kolicina: formRef.current.kolicina.value,

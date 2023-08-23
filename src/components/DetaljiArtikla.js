@@ -10,7 +10,7 @@ const DetaljiArtikla=({artikal})=>{
     return (
         <div className="detalji-artikla">
             <h2 className="artikal-naziv">{artikal.naziv}</h2>
-            <img src={artikal.slika} alt={artikal.naziv} className="artikal-slika" />
+            <img src={artikal.slikaArtikla} alt={artikal.naziv} className="artikal-slika" />
             <p className={`artikal-kolicina ${klasaZaKolicinu}`}>{formatiranaKolicina}</p>
             <p className="artikal-cena">Cena: {artikal.cena.toLocaleString("sr-RS", { style: "currency", currency: "RSD" })}</p>
             <p className="artikal-opis">Opis: {artikal.opis}</p>
