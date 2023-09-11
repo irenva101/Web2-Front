@@ -35,3 +35,7 @@
   .link-section:last-child {
     margin-bottom: 0;
   }
+
+  .crveno-dugme{
+    background-color: #f44336;
+  }

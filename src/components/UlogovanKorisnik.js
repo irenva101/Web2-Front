@@ -1,7 +1,8 @@
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import React from "react";
 import jwtDecode from "jwt-decode";
 import "../../src/Pocetna.css";
+import { useNavigate } from "react-router-dom";
 
 const centerContentStyle = {
   display: "flex",
@@ -19,7 +20,11 @@ const linkStyle = {
   borderRadius: "5px",
 };
 
+
+
 const UlogovanKorisnik = () => {
+  const navigate = useNavigate();
+
   const getUserRole = () => {
     var token = localStorage.getItem("token");
     if (token) {
@@ -34,123 +39,162 @@ const UlogovanKorisnik = () => {
     }
     return null;
   };
-  const getUserVerification=()=>{
+  const getUserVerification = () => {
     var token = localStorage.getItem("token");
-    const decodedToken=jwtDecode(token);
+    const decodedToken = jwtDecode(token);
     return decodedToken["Verifikovan"];
-  }
-  
+  };
+
   var role = getUserRole();
-  var verification=getUserVerification();
+  var verification = getUserVerification();
   console.log(role);
   console.log(verification);
-  
-  
-    const commonLinkStyle={ textDecoration: "none", fontSize: "18px", marginBottom: "10px" };
-  
+
+  const commonLinkStyle = {
+    textDecoration: "none",
+    fontSize: "18px",
+    marginBottom: "10px",
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Uklonite token iz lokalnog skladišta
+    navigate("/logovanje");
+    // Preusmerite na stranicu za prijavu
+  };
 
   return (
     <div style={centerContentStyle}>
-      <h1  className="page-title">Pocetna stranica</h1>
-      
-  
+      <h1 className="page-title">Pocetna stranica</h1>
+
       {(role === "Kupac" || role === "Prodavac" || role === "Admin") && (
         <div className="link-section">
-        <>
-          <Link to="/ulogovan-korisnik/profil" style={{ ...commonLinkStyle, color: "#007bff" }}>
-            Profil
-          </Link>
-          <p></p>
-        </>
+          <>
+            <Link
+              to="/ulogovan-korisnik/profil"
+              style={{ ...commonLinkStyle, color: "#007bff" }}
+            >
+              Profil
+            </Link>
+            <p></p>
+          </>
         </div>
       )}
       {role === "Kupac" && (
         <>
-         <div className="link-section">
-          <Link
-            to="/ulogovan-korisnik/pregled-artikala"
-            style={{ ...commonLinkStyle, color: "#007bff" }}
+          <div className="link-section">
+            <Link
+              to="/ulogovan-korisnik/pregled-artikala"
+              style={{ ...commonLinkStyle, color: "#007bff" }}
             >
-            Nova porudzbina
-          </Link>
+              Nova porudzbina
+            </Link>
+            <p></p>
+          </div>
+
+          <div className="link-section">
+            <Link
+              to="/ulogovan-korisnik/prethodne-porudzbine"
+              style={{ ...commonLinkStyle, color: "#007bff" }}
+            >
+              Prethodne porudzbine
+            </Link>
+            <p></p>
+          </div>
           <p></p>
-            </div>
-          
-            <div className="link-section">
-          <Link
-            to="/ulogovan-korisnik/prethodne-porudzbine"
-            style={{ ...commonLinkStyle, color: "#007bff" }}
-          >
-            Prethodne porudzbine
-          </Link>
-          <p></p>
-        </div>
+          <div>
+            <button className="crveno-dugme"
+              type="button"
+              color="red"
+              onClick={handleLogout} // Dodajte onClick event koji poziva handleLogout funkciju
+            >
+              Odjavi se
+            </button>
+          </div>
         </>
       )}
-  
-      {role === "Prodavac" &&  verification==="True" &&(
+
+      {role === "Prodavac" && verification === "True" && (
         <>
-         <div className="link-section">
-          <Link
-            to="/ulogovan-korisnik/dodaj-artikal"
-            style={{ ...commonLinkStyle, color: "#007bff" }}
-          >
-            Dodaj artikal
-          </Link>
+          <div className="link-section">
+            <Link
+              to="/ulogovan-korisnik/dodaj-artikal"
+              style={{ ...commonLinkStyle, color: "#007bff" }}
+            >
+              Dodaj artikal
+            </Link>
           </div>
           <p></p>
           <div className="link-section">
-          <Link
-            to="/ulogovan-korisnik/moje-porudzbine"
-            style={{ ...commonLinkStyle, color: "#007bff" }}
-          >
-            Moje porudzbine
-          </Link>
+            <Link
+              to="/ulogovan-korisnik/moje-porudzbine"
+              style={{ ...commonLinkStyle, color: "#007bff" }}
+            >
+              Moje porudzbine
+            </Link>
           </div>
           <p></p>
           <div className="link-section">
-          <Link
-            to="/ulogovan-korisnik/nove-porudzbine"
-            style={{ ...commonLinkStyle, color: "#007bff" }}
-          >
-            Nove porudzbine
-          </Link>
+            <Link
+              to="/ulogovan-korisnik/nove-porudzbine"
+              style={{ ...commonLinkStyle, color: "#007bff" }}
+            >
+              Nove porudzbine
+            </Link>
           </div>
           <p></p>
 
           <div className="link-section">
-          <Link
-            to="/ulogovan-korisnik/mapa"
-            style={{ ...commonLinkStyle, color: "#007bff" }}
-          >
-            Mapa
-          </Link>
+            <Link
+              to="/ulogovan-korisnik/mapa"
+              style={{ ...commonLinkStyle, color: "#007bff" }}
+            >
+              Mapa
+            </Link>
           </div>
           <p></p>
+          <p></p>
+          <div>
+            <button className="crveno-dugme"
+              type="button"
+              color="red"
+              onClick={handleLogout} // Dodajte onClick event koji poziva handleLogout funkciju
+            >
+              Odjavi se
+            </button>
+          </div>
         </>
       )}
-  
+
       {role === "Admin" && (
         <>
-         <div className="link-section">
-          <Link
-            to="/ulogovan-korisnik/verifikacija"
-            style={{ ...commonLinkStyle, color: "#007bff" }}
+          <div className="link-section">
+            <Link
+              to="/ulogovan-korisnik/verifikacija"
+              style={{ ...commonLinkStyle, color: "#007bff" }}
             >
-            Verifikacija
-          </Link>
-            </div>
-            <div className="link-section">
+              Verifikacija
+            </Link>
+          </div>
+          <div className="link-section">
+            <p></p>
+            <Link
+              to="/ulogovan-korisnik/sve-porudzbine"
+              style={{ ...commonLinkStyle, color: "#007bff" }}
+            >
+              Sve porudzbine
+            </Link>
+          </div>
           <p></p>
-          <Link
-            to="/ulogovan-korisnik/sve-porudzbine"
-            style={{ ...commonLinkStyle, color: "#007bff" }}
-          >
-            Sve porudzbine
-          </Link>
+          <div>
+            <button className="crveno-dugme"
+              type="button"
+              color="red"
+              onClick={handleLogout} // Dodajte onClick event koji poziva handleLogout funkciju
+            >
+              Odjavi se
+            </button>
           </div>
         </>
-        
       )}
     </div>
   );

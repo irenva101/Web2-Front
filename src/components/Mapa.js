@@ -123,7 +123,7 @@ const Mapa = () => {
       />
 
       {final
-      .filter((marker)=> !statusPorudzbine[marker.id] && !marker.isporucena)
+      .filter((marker)=> !statusPorudzbine[marker.id] && !marker.isporucena && !marker.otkazana)
       .map((marker) => (
         <Marker key={marker.id} position={marker.geocode} icon={customIcon}>
           <Popup>

@@ -24,6 +24,7 @@ const PrethodnePorudzbine = () => {
       },
     ],
     vremeIsporuke: "2000-18-06T18:48:23.437Z",
+    isporucena: false
   });
 
   const formatDate = (dateString) => {
@@ -237,7 +238,6 @@ const PrethodnePorudzbine = () => {
                         src={artikal.slika}
                         alt={artikal.naziv}
                         className="artikal-slika"
-                        
                       />
                       <p className="artikal-naziv">{artikal.naziv}</p>
                       <p className="artikal-cijena">Cena: {artikal.cena}</p>
@@ -247,10 +247,11 @@ const PrethodnePorudzbine = () => {
                 </td>
                 <td className="otkazi-column">{porudzbina.komentar}</td>
                 <td className="otkazi-column">
-                  {/* Prikaz preostalog vremena */}
-                  {preostaloVreme[porudzbina.id] > 0
-                    ? formatRemainingTime(preostaloVreme[porudzbina.id])
-                    : "Isporuceno"}
+                  {porudzbina.isporucena
+                    ? preostaloVreme[porudzbina.id] > 0
+                      ? formatRemainingTime(preostaloVreme[porudzbina.id])
+                      : "Isporuceno"
+                    : "Nije poslata porudzbina"}
                 </td>
                 <td className="otkazi-column">
                   {!porudzbina.otkazana &&
