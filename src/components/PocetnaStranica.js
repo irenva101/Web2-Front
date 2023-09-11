@@ -9,6 +9,7 @@ function PocetnaStranica(){
             <Link to="/registracija" className="btn btn-success mr-3">Registracija</Link>
             <p></p>
             <Link to="/logovanje" className="btn btn-primary">Login</Link>
+            
         </div>
     );
 }

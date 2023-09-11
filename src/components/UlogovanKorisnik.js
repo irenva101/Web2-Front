@@ -52,6 +52,7 @@ const UlogovanKorisnik = () => {
   return (
     <div style={centerContentStyle}>
       <h1  className="page-title">Pocetna stranica</h1>
+      
   
       {(role === "Kupac" || role === "Prodavac" || role === "Admin") && (
         <div className="link-section">
@@ -113,6 +114,16 @@ const UlogovanKorisnik = () => {
             style={{ ...commonLinkStyle, color: "#007bff" }}
           >
             Nove porudzbine
+          </Link>
+          </div>
+          <p></p>
+
+          <div className="link-section">
+          <Link
+            to="/ulogovan-korisnik/mapa"
+            style={{ ...commonLinkStyle, color: "#007bff" }}
+          >
+            Mapa
           </Link>
           </div>
           <p></p>

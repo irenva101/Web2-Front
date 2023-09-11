@@ -238,6 +238,7 @@ const PregledArtikala = () => {
         console.log("(GET) Svi prodavci:");
         console.log(data);
         setProdavci(data);
+        
       })
       .catch((error) => {
         console.error("Greška prilikom dobavljanja prodavaca:", error);

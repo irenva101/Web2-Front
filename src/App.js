@@ -13,6 +13,7 @@ import NovePorudzbine from "./components/NovePorudzbine";
 import Verifikacija from "./components/Verifikacija";
 import PrikazVerifikacija from "./components/PrikazVerifikacija";
 import SvePorudzbine from "./components/SvePorudzbine";
+import Mapa from "./components/Mapa";
 
 
 
@@ -53,6 +54,10 @@ const App = () => {
           <Route
             path="/ulogovan-korisnik/nove-porudzbine"
             element={<NovePorudzbine />}
+          />
+          <Route
+            path="/ulogovan-korisnik/mapa"
+            element={<Mapa/>}
           />
           {/*Admin moze da vidi */}
           <Route
