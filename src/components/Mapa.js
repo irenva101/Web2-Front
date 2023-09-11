@@ -122,7 +122,9 @@ const Mapa = () => {
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {final.map((marker) => (
+      {final
+      .filter((marker)=> !statusPorudzbine[marker.id] && !marker.isporucena)
+      .map((marker) => (
         <Marker key={marker.id} position={marker.geocode} icon={customIcon}>
           <Popup>
             <p>{marker.adresaDostave}</p>
