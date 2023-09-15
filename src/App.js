@@ -14,70 +14,67 @@ import Verifikacija from "./components/Verifikacija";
 import PrikazVerifikacija from "./components/PrikazVerifikacija";
 import SvePorudzbine from "./components/SvePorudzbine";
 import Mapa from "./components/Mapa";
-
-
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 const App = () => {
-  
-  
-  
-  
-
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<PocetnaStranica />} />
-          <Route exact path="/pocetna-stranica" element={<PocetnaStranica />} />
-          <Route path="/registracija" element={<Registracija />} />
-          <Route path="/logovanje" element={<Logovanje />} />
-          <Route path="/ulogovan-korisnik/profil" element={<Profil />} />
-          <Route path="ulogovan-korisnik" element={<UlogovanKorisnik />} />
-          {/*Kupac moze da vidi */}
-          <Route
-            path="/ulogovan-korisnik/pregled-artikala"
-            element={<PregledArtikala />}
-          />
-          <Route
-            path="/ulogovan-korisnik/prethodne-porudzbine"
-            element={<PrethodnePorudzbine />}
-          />
-          {/*Prodavac moze da vidi */}
-          <Route
-            path="/ulogovan-korisnik/dodaj-artikal"
-            element={<DodavanjeArtikla />}
-          />
-          <Route
-            path="/ulogovan-korisnik/moje-porudzbine"
-            element={<StarePorudzbine />}
-          />
-          <Route
-            path="/ulogovan-korisnik/nove-porudzbine"
-            element={<NovePorudzbine />}
-          />
-          <Route
-            path="/ulogovan-korisnik/mapa"
-            element={<Mapa/>}
-          />
-          {/*Admin moze da vidi */}
-          <Route
-            path="/ulogovan-korisnik/verifikacija"
-            element={<Verifikacija />}
-          />
-          <Route
-            path="/ulogovan-korisnik/prikaz-verifikacija"
-            element={<PrikazVerifikacija />}
-          />
-          <Route
-            path="/ulogovan-korisnik/sve-porudzbine"
-            element={<SvePorudzbine />}
-          />
-        </Routes>
-      </BrowserRouter>
-      <p></p>
-      
-
-    </div>
+    <PayPalScriptProvider
+      options={{ "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID }}
+    >
+      <div className="App">
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<PocetnaStranica />} />
+            <Route
+              exact
+              path="/pocetna-stranica"
+              element={<PocetnaStranica />}
+            />
+            <Route path="/registracija" element={<Registracija />} />
+            <Route path="/logovanje" element={<Logovanje />} />
+            <Route path="/ulogovan-korisnik/profil" element={<Profil />} />
+            <Route path="ulogovan-korisnik" element={<UlogovanKorisnik />} />
+            {/*Kupac moze da vidi */}
+            <Route
+              path="/ulogovan-korisnik/pregled-artikala"
+              element={<PregledArtikala />}
+            />
+            <Route
+              path="/ulogovan-korisnik/prethodne-porudzbine"
+              element={<PrethodnePorudzbine />}
+            />
+            {/*Prodavac moze da vidi */}
+            <Route
+              path="/ulogovan-korisnik/dodaj-artikal"
+              element={<DodavanjeArtikla />}
+            />
+            <Route
+              path="/ulogovan-korisnik/moje-porudzbine"
+              element={<StarePorudzbine />}
+            />
+            <Route
+              path="/ulogovan-korisnik/nove-porudzbine"
+              element={<NovePorudzbine />}
+            />
+            <Route path="/ulogovan-korisnik/mapa" element={<Mapa />} />
+            {/*Admin moze da vidi */}
+            <Route
+              path="/ulogovan-korisnik/verifikacija"
+              element={<Verifikacija />}
+            />
+            <Route
+              path="/ulogovan-korisnik/prikaz-verifikacija"
+              element={<PrikazVerifikacija />}
+            />
+            <Route
+              path="/ulogovan-korisnik/sve-porudzbine"
+              element={<SvePorudzbine />}
+            />
+          </Routes>
+        </BrowserRouter>
+        <p></p>
+      </div>
+    </PayPalScriptProvider>
   );
 };
 

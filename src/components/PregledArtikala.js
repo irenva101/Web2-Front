@@ -4,6 +4,7 @@ import chartSlika from "../images/chart.png";
 import Korpa from "./Korpa";
 import jwtDecode from "jwt-decode";
 import "../../src/Artikli.css";
+import PayPalCheckoutButton from "./PaypalCheckoutButton";
 
 const PregledArtikala = () => {
   const [artikli, setArtikli] = useState([]);
@@ -15,6 +16,19 @@ const PregledArtikala = () => {
   // Globalna promenljiva za ID-jeve artikala
   const [selectedArtikliIds, setSelectedArtikliIds] = useState([]);
   const [kolicina, setKolicina] = useState("");
+  const [isPaid, setIsPaid] = useState(false);
+  const [payPal, setPayPal] = useState(false);
+  const [orderId, setOrderId] = useState(null);
+  const [ukupanIznos, setUkupanIznos] = useState(0);
+  const [temp, setTemp] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("naziv");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [korpa, setKorpa] = useState(0);
+  const [showPregledPorudzbine, setShowPregledPorudzbine] = useState(false);
+  const odabraniArtikli = cartItems.filter((item) => item.kolicina > 0);
+  const [prodavci, setProdavci] = useState("");
+  //const [ukupanIznosSaPostarinom, setUkupanIznosSaPostarinom] = useState(0);
 
   const formatiranoVremeIsporuke = (vremePorucivanja) => {
     console.log("VREME PORUCIVANJA: " + vremePorucivanja);
@@ -29,17 +43,6 @@ const PregledArtikala = () => {
       return alert("VREME PORUCIVANJA NULL");
     }
   };
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("naziv");
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [korpa, setKorpa] = useState(0);
-  const [ukupanIznos, setUkupanIznos] = useState(0);
-  const [showPregledPorudzbine, setShowPregledPorudzbine] = useState(false);
-  const odabraniArtikli = cartItems.filter((item) => item.kolicina > 0);
-  const [prodavci, setProdavci] = useState("");
-  //const [vremePorucivanja, setVremePorucivanja] = useState(new Date());
-  //console.log(vremePorucivanja);
 
   const posaljiPorudzbinuNaServer = () => {
     // Prvo kreiramo objekat koji sadrži sve potrebne informacije za porudžbinu
@@ -91,6 +94,12 @@ const PregledArtikala = () => {
     console.log("-----------------VREME PORUCIVANJA: " + vremePorucivanja);
     console.log("-----------------VREME ISPORUKE :" + vremeIsporuke);
 
+    if (orderId != null) {
+      console.log("JESMO LI DOBACILI OVDE?");
+      setIsPaid(true);
+      setPayPal(true);
+    }
+
     const porudzbina = {
       artikli: zaSlanje,
       ukupanIznos: ukupanIznos,
@@ -100,6 +109,9 @@ const PregledArtikala = () => {
       vremePorucivanja: vremePorucivanja,
       vremeIsporuke: vremeIsporuke,
       otkazana: false,
+      isPaid: orderId != null ? true : false, // Dodaj isPaid u porudžbinu
+      payPal: orderId != null ? true : false, // Dodaj payPal u porudžbinu
+      orderId: orderId || "0",
     };
 
     console.log(JSON.stringify(porudzbina));
@@ -146,7 +158,7 @@ const PregledArtikala = () => {
         .then((data) => {
           // uspesno poslato serveru
           console.log("Artikli koje saljem za smanjenje kolicine:");
-          console.log(data);
+
           alert("Uspesno je smanjena kolicina artikala.");
         })
         .catch((error) => {
@@ -157,50 +169,18 @@ const PregledArtikala = () => {
     //nakon sto sam poslala porudzbinu da smanjim broj artikala
   };
 
-  //funkcija koja dobavlja cenu postarine konkretnog prodavca
-  function postarinaProdavca(cartItems) {
-    //provera ako ima dva artikla od istog Pordavca
-    const postarinaMap = new Map();
-
-    cartItems.forEach((item) => {
-      const idProdavca = item.artikal["prodavacID"];
-      const kolicina = item.kolicina;
-      const postarina = postarinaMap.get(idProdavca) || 0;
-
-      console.log(
-        "Id prodavca: " +
-          idProdavca +
-          "kolicina: " +
-          kolicina +
-          "Postarina: " +
-          postarina
-      );
-
-      const trazeniProdavac = prodavci.find(
-        (prodavac) => prodavac.id === idProdavca
-      );
-
-      const postarinaTrazenogProdavca = trazeniProdavac.postarina;
-      postarinaMap.set(
-        idProdavca,
-        postarina + kolicina * postarinaTrazenogProdavca
-      );
-    });
-
-    let ukupnaPostarina = 0;
-
-    // Saberi sve postarine
-    postarinaMap.forEach((postarina) => {
-      ukupnaPostarina += postarina;
-    });
-
-    return ukupnaPostarina;
-  }
+  const handlePayPalClick = () => {
+    setIsPaid(true);
+    setPayPal(true);
+    console.log(
+      "JEsmo li upali u ovaj gde gde smo postavili sat paid true i setpaypal true."
+    );
+  };
 
   useEffect(() => {
     var token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
-    console.log(decodedToken["Id"]);
+    //console.log(decodedToken["Id"]);
 
     fetch("https://localhost:44388/Artikal", {
       method: "GET",
@@ -238,7 +218,6 @@ const PregledArtikala = () => {
         console.log("(GET) Svi prodavci:");
         console.log(data);
         setProdavci(data);
-        
       })
       .catch((error) => {
         console.error("Greška prilikom dobavljanja prodavaca:", error);
@@ -249,6 +228,8 @@ const PregledArtikala = () => {
   useEffect(() => {
     if (cartItems.length === 0) {
       setShowPregledPorudzbine(false);
+    } else {
+      ukupnaPostarina(cartItems);
     }
   }, [cartItems]);
 
@@ -307,6 +288,8 @@ const PregledArtikala = () => {
   const handlePoruci = () => {
     // Ovde možete implementirati logiku za slanje porudžbine na server, resetovanje korpe, ili nešto drugo što želite
     alert("Porudžbina je uspešno poslata!");
+    setIsPaid(false);
+    setPayPal(false);
     setCartItems([]);
     setUkupanIznos(0);
   };
@@ -327,7 +310,8 @@ const PregledArtikala = () => {
     });
   }
 
-  function ukupnaPostarina(cartItems) {
+  const ukupnaPostarina = (cartItems) => {
+    console.log(cartItems);
     //provera ako ima dva artikla od istog Pordavca
     const listaIdjevaProdavaca = [];
 
@@ -349,9 +333,15 @@ const PregledArtikala = () => {
       ukupnaPostarina += prodavac.postarina;
     });
 
-    return ukupnaPostarina;
-  }
+    setTemp(ukupnaPostarina);
+  };
+
   const [hoveredArtikal, setHoveredArtikal] = useState(null);
+
+  const product = {
+    description: "nesto",
+    price: 19,
+  };
 
   return (
     <div>
@@ -412,7 +402,11 @@ const PregledArtikala = () => {
                   className="artikal-image"
                 />
               </td>
-              <td className={`kolicina-cell ${artikal.kolicina > 0 ? "in-stock" : "out-of-stock"}`}>
+              <td
+                className={`kolicina-cell ${
+                  artikal.kolicina > 0 ? "in-stock" : "out-of-stock"
+                }`}
+              >
                 {artikal.kolicina > 0 ? "Na stanju" : "Nema na stanju"}
               </td>
               <td>
@@ -495,15 +489,25 @@ const PregledArtikala = () => {
                   Ukupan iznos(sa postarinom):
                 </h2>
                 <h2>
-                  {(ukupanIznos + ukupnaPostarina(cartItems)).toLocaleString(
-                    "sr-RS",
-                    {
-                      style: "currency",
-                      currency: "RSD",
-                    }
-                  )}
+                  {(ukupanIznos + temp).toLocaleString("sr-RS", {
+                    style: "currency",
+                    currency: "RSD",
+                  })}
                 </h2>
               </div>
+              <br />
+
+              <div className="paypal-button-container">
+                <PayPalCheckoutButton
+                  product={product}
+                  setOrderId={setOrderId}
+                />
+              </div>
+
+              <br />
+
+              <br />
+
               <button
                 className="poruci-button"
                 onClick={() => posaljiPorudzbinuNaServer()}

@@ -12,6 +12,33 @@ const DodavanjeArtikla = () => {
   const [slikaArtikla, setSlikaArtikla] = useState("");
   const [UploadedImage, setUploadedImage] = useState(null);
 
+  useEffect(() => {
+    var token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    console.log(decodedToken["Id"]);
+
+    fetch(
+      `https://localhost:44388/Artikal/idKorisnika?idKorisnika=${decodedToken["Id"]}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        mode: "cors",
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setArtikli(data);
+        console.log("JESMO LI STIGLI OVDE");
+        console.log(JSON.stringify(data));
+      })
+      .catch((error) => {
+        console.error("Greška prilikom dohvatanja artikala:", error);
+      });
+    // setArtikli(getAllArtikle());
+  }, []);
 
   const azurirajArtikal = (artikal) => {
     setTrenutniArtikal(artikal);
@@ -65,7 +92,6 @@ const DodavanjeArtikla = () => {
   };
 
   useEffect(() => {
-    
     if (trenutniArtikal) {
       setFormData({
         prodavacId: trenutniArtikal.prodavacId,
@@ -131,33 +157,6 @@ const DodavanjeArtikla = () => {
     });
   };
 
-  useEffect(() => {
-    var token = localStorage.getItem("token");
-    const decodedToken = jwtDecode(token);
-    console.log(decodedToken["Id"]);
-
-    fetch(
-      `https://localhost:44388/Artikal/idKorisnika?idKorisnika=${decodedToken["Id"]}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        mode: "cors",
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setArtikli(data);
-        console.log(JSON.stringify(data));
-      })
-      .catch((error) => {
-        console.error("Greška prilikom dohvatanja artikala:", error);
-      });
-    // setArtikli(getAllArtikle());
-  }, []);
-
   const handleSubmit = (e) => {
     var token = localStorage.getItem("token");
 
@@ -179,7 +178,7 @@ const DodavanjeArtikla = () => {
     console.log(decodedToken["Id"]);
     //dalje ide lgika za slanje
     const formDataToSend = {
-      prodavacId: decodedToken["Id"],//zapravo salje IdKorisnika
+      prodavacId: decodedToken["Id"], //zapravo salje IdKorisnika
       naziv: formRef.current.naziv.value,
       cena: formRef.current.cena.value,
       kolicina: formRef.current.kolicina.value,
@@ -325,53 +324,57 @@ const DodavanjeArtikla = () => {
       <div className="prikaz-artikala-container">
         <h1 className="page-title">Prikaz svih artikala</h1>
         <table className="artikli-table">
-          <tr>
-            <th className="table-header">Naziv</th>
-            <th className="table-header">Cena</th>
-            <th className="table-header">Kolicina</th>
-            <th className="table-header">Opis</th>
-            <th className="table-header">Slika</th>
-          </tr>
-          {artikli.map((artikal) => (
-            <tr key={artikal.id} className="artikal-row">
-              <td>{artikal.naziv}</td>
-              <td>
-                {artikal.cena.toLocaleString("sr-RS", {
-                  style: "currency",
-                  currency: "RSD",
-                })}
-              </td>
-              <td>{artikal.kolicina}</td>
-              <td>{artikal.opis}</td>
-              <td>
-                <img
-                  src={artikal.slika}
-                  alt="Uploaded"
-                  className="artikal-image"
-                />
-              </td>
-              <td>
-                <button
-                  type="button"
-                  className="detalji-button"
-                  onClick={() => {
-                    azurirajArtikal(artikal);
-                  }}
-                >
-                  Azuriraj
-                </button>
-              </td>
-              <td>
-                <button
-                  type="button"
-                  className="detalji-button obrisi-button"
-                  onClick={() => obrisiArtikal(artikal)}
-                >
-                  Obrisi
-                </button>
-              </td>
+          <thead>
+            <tr>
+              <th className="table-header">Naziv</th>
+              <th className="table-header">Cena</th>
+              <th className="table-header">Kolicina</th>
+              <th className="table-header">Opis</th>
+              <th className="table-header">Slika</th>
             </tr>
-          ))}
+          </thead>
+          <tbody>
+            {artikli.map((artikal) => (
+              <tr key={artikal.id} className="artikal-row">
+                <td>{artikal.naziv}</td>
+                <td>
+                  {artikal.cena.toLocaleString("sr-RS", {
+                    style: "currency",
+                    currency: "RSD",
+                  })}
+                </td>
+                <td>{artikal.kolicina}</td>
+                <td>{artikal.opis}</td>
+                <td>
+                  <img
+                    src={artikal.slika}
+                    alt="Uploaded"
+                    className="artikal-image"
+                  />
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    className="detalji-button"
+                    onClick={() => {
+                      azurirajArtikal(artikal);
+                    }}
+                  >
+                    Azuriraj
+                  </button>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    className="detalji-button obrisi-button"
+                    onClick={() => obrisiArtikal(artikal)}
+                  >
+                    Obrisi
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>

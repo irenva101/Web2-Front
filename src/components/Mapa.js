@@ -123,34 +123,39 @@ const Mapa = () => {
       />
 
       {final
-      .filter((marker)=> !statusPorudzbine[marker.id] && !marker.isporucena && !marker.otkazana)
-      .map((marker) => (
-        <Marker key={marker.id} position={marker.geocode} icon={customIcon}>
-          <Popup>
-            <p>{marker.adresaDostave}</p>
-            {statusPorudzbine[marker.id] ? (
-              <img
-                src={otkaceno}
-                alt="Isporuceno"
-                className="manja-ikona"
-              />
-            ) : (
-              <button
-                onClick={() => {
-                  // Ovde označavate porudžbinu kao isporučenu
-                  setStatusPorudzbine((prevStatus) => ({
-                    ...prevStatus,
-                    [marker.id]: true,
-                  }));
-                  setSelectedPorudzbinaId(marker.id);
-                }}
-              >
-                Posalji porudzbinu
-              </button>
-            )}
-          </Popup>
-        </Marker>
-      ))}
+        .filter((marker) => {
+          if (marker.payPal === true) {
+            return true;
+          }
+          const orderTime = new Date(marker.vremePorucivanja);
+          const currentTime = new Date();
+          const minutesDifference = (currentTime - orderTime) / (1000 * 60); // 1000 ms * 60 s = 1 min
+          
+          return marker.payPal === false && minutesDifference >= 60;
+        })
+        .map((marker) => (
+          <Marker key={marker.id} position={marker.geocode} icon={customIcon}>
+            <Popup>
+              <p>{marker.adresaDostave}</p>
+              {statusPorudzbine[marker.id] ? (
+                <img src={otkaceno} alt="Isporuceno" className="manja-ikona" />
+              ) : (
+                <button
+                  onClick={() => {
+                    // Ovde označavate porudžbinu kao isporučenu
+                    setStatusPorudzbine((prevStatus) => ({
+                      ...prevStatus,
+                      [marker.id]: true,
+                    }));
+                    setSelectedPorudzbinaId(marker.id);
+                  }}
+                >
+                  Posalji porudzbinu
+                </button>
+              )}
+            </Popup>
+          </Marker>
+        ))}
     </MapContainer>
   );
 };
