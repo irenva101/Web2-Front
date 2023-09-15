@@ -437,3 +437,9 @@ input {
 .submit-button:hover {
   background-color: #1b7b6f;
 }
+
+.div-table{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

@@ -108,10 +108,10 @@ const Profil = () => {
     e.preventDefault();
     // Fetch zahtev za slanje izmenjenih podataka na server
     //formatiranje datuma za slanje nazad serveru
-    if (formData.lozinka !== passwordConfirmation) {
-      console.log("Šifre se ne podudaraju.");
-      return;
-    }
+    // if (formData.lozinka !== passwordConfirmation) {
+    //   console.log("Šifre se ne podudaraju.");
+    //   return;
+    // }
 
     const zaKonvertovanje = formData.datumRodjenja; //"28-7-2023"
     const formattedDateString = zaKonvertovanje + "T23:00:00.000Z";

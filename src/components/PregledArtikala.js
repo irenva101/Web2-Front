@@ -340,7 +340,7 @@ const PregledArtikala = () => {
 
   const product = {
     description: "nesto",
-    price: 19,
+    price: ukupanIznos+temp,
   };
 
   return (
